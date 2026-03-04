@@ -10,7 +10,7 @@ import { Search, Calendar, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useGetBlogsQuery } from "@/store/slice/apiSlice";
 
-const blogPosts = [
+const mockblogPosts = [
   {
     id: 1,
     slug: "tips-optimal-packaging",
@@ -102,7 +102,7 @@ export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const filteredPosts = blogPosts?.filter((post) => {
+  const filteredPosts = mockblogPosts?.filter((post: any) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
@@ -111,7 +111,9 @@ export default function BlogPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = Array.from(new Set(blogPosts?.map((p) => p?.category)));
+  const categories = Array.from(
+    new Set(mockblogPosts?.map((p) => p?.category)),
+  );
 
   return (
     <>
