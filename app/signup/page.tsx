@@ -99,33 +99,7 @@ export default function SignupPage() {
       password: formData.password,
     });
 
-    // try {
-    //   console.log("Calling register with:", {
-    //     fullName: formData.fullName,
-    //     email: formData.email,
-    //     company: formData.company,
-    //     address: formData.address,
-    //     phone: formData.phone,
-    //     password: formData.password,
-    //   });
 
-    //   const success = await register({
-    //     fullName: formData.fullName,
-    //     email: formData.email,
-    //     companyName: formData.company,
-    //     address: formData.address,
-    //     phoneNumber: formData.phone,
-    //     password: formData.password,
-    //   });
-
-    //   console.log("Register response:", success);
-
-    //   if (success) {
-    //     router.push("/verify-email");
-    //   }
-    // } catch (err) {
-    //   console.error("REGISTER FAILED:", err);
-    // }
   };
 
   useEffect(() => {
@@ -134,26 +108,6 @@ export default function SignupPage() {
       router.push("/verify-email");
     }
   }, [data]);
-
-  // Mock signup - in production, this would call your auth API
-  // console.log("Signup attempt:", formData)
-
-  // Simulate API delay
-  // await new Promise((resolve) => setTimeout(resolve, 1500))
-
-  // Store in localStorage (mock)
-  // localStorage.setItem(
-  //   "user",
-  //   JSON.stringify({
-  //     fullName: formData.fullName,
-  //     email: formData.email,
-  //     company: formData.company,
-  //     phone: formData.phone,
-  //   }),
-  // )
-
-  // Redirect to dashboard
-  // window.location.href = "/dashboard"
 
   /*  RESEND VERIFICATION  */
 
