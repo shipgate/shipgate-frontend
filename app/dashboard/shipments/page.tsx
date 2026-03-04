@@ -174,7 +174,7 @@ export default function ShipmentsPage() {
                   </tr>
                 ) : (
                   filteredShipments &&
-                  filteredShipments.map((shipment) => (
+                  filteredShipments.map((shipment: any) => (
                     <tr
                       key={shipment.id}
                       className="border-b border-border hover:bg-muted/50 transition"
