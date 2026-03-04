@@ -1,51 +1,51 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { Cursor, useTypewriter } from 'react-simple-typewriter'
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Navbar } from "@/components/navbar"
-import { LoadingOverlay } from "@/components/loading-overlay"
-import { Truck, Globe, Clock, Shield, Zap, Package } from "lucide-react"
-import Link from "next/link" 
-import { ExchangeRatesTicker } from "@/components/exchange-rates-ticker"
-import { toast } from "sonner"
-import { AnimatedStats } from "@/components/animated-stats"
-import { PartnersTicker } from "@/components/partners-ticker"
-import { motion } from "framer-motion"
-import { ShippingRoutesSection } from "@/components/shipping-routes"
-import { CustomerReviews } from "@/components/customer-reviews"
-import { ScrollToTop } from "@/components/scroll-to-top"
+import type React from "react";
+import { Cursor, useTypewriter } from "react-simple-typewriter";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Navbar } from "@/components/navbar";
+import { LoadingOverlay } from "@/components/loading-overlay";
+import { Truck, Globe, Clock, Shield, Zap, Package } from "lucide-react";
+import Link from "next/link";
+import { ExchangeRatesTicker } from "@/components/exchange-rates-ticker";
+import { toast } from "sonner";
+import { AnimatedStats } from "@/components/animated-stats";
+import { PartnersTicker } from "@/components/partners-ticker";
+import { motion } from "framer-motion";
+import { ShippingRoutesSection } from "@/components/shipping-routes";
+import { CustomerReviews } from "@/components/customer-reviews";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 export default function HomePage() {
-  const [trackingNumber, setTrackingNumber] = useState("")
-  const [isSearching, setIsSearching] = useState(false)
-  const [activeTab, setActiveTab] = useState("track")
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [activeTab, setActiveTab] = useState("track");
   const [text, count] = useTypewriter({
-        words: [
-            "SHIP SMARTER.",
-            "TRACK FASTER.",
-            "DELIVER BETTER.",
-            "We deliver straight to your doorstep."
-        ],
-        loop: true,
-        delaySpeed: 2000,
-  })
+    words: [
+      "SHIP SMARTER.",
+      "TRACK FASTER.",
+      "DELIVER BETTER.",
+      "We deliver straight to your doorstep.",
+    ],
+    loop: true,
+    delaySpeed: 2000,
+  });
 
   const handleTrack = async (e: React.FormEvent) => {
-   e.preventDefault()
-    window.location.href = `/track?id=${trackingNumber}`
-  }
+    e.preventDefault();
+    window.location.href = `/track?id=${trackingNumber}`;
+  };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast.success("Copied to clipboard")
-  }
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  };
 
   return (
     <>
-      <ExchangeRatesTicker />
+      {/* <ExchangeRatesTicker /> */}
       <Navbar />
       {isSearching && <LoadingOverlay />}
       <main className="w-full">
@@ -67,18 +67,21 @@ export default function HomePage() {
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white text-center mb-12 leading-tight">
               {text}
-              <Cursor/>
+              <Cursor />
             </h1>
 
             {/* Action Tabs */}
-            <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col sm:flex-row justify-center gap-4 mb-12"
+            >
               <button
                 onClick={() => setActiveTab("rate")}
                 className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
-                  activeTab === "rate" ? "bg-white text-foreground" : "bg-white/20 text-white hover:bg-white/30"
+                  activeTab === "rate"
+                    ? "bg-white text-foreground"
+                    : "bg-white/20 text-white hover:bg-white/30"
                 }`}
               >
                 <Package className="w-5 h-5" />
@@ -87,10 +90,17 @@ export default function HomePage() {
               <button
                 onClick={() => setActiveTab("track")}
                 className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
-                  activeTab === "track" ? "bg-primary text-white" : "bg-white/20 text-white hover:bg-white/30"
+                  activeTab === "track"
+                    ? "bg-primary text-white"
+                    : "bg-white/20 text-white hover:bg-white/30"
                 }`}
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -103,7 +113,9 @@ export default function HomePage() {
               <button
                 onClick={() => setActiveTab("consolidation")}
                 className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
-                  activeTab === "consolidation" ? "bg-white text-foreground" : "bg-white/20 text-white hover:bg-white/30"
+                  activeTab === "consolidation"
+                    ? "bg-white text-foreground"
+                    : "bg-white/20 text-white hover:bg-white/30"
                 }`}
               >
                 <Globe className="w-5 h-5" />
@@ -113,13 +125,15 @@ export default function HomePage() {
 
             {/* Tracking Form */}
             {activeTab === "track" && (
-             <motion.div 
-             className="max-w-4xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              
-             >
-                <form onSubmit={handleTrack} className="flex flex-row gap-3 mb-6">
+              <motion.div
+                className="max-w-4xl mx-auto"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <form
+                  onSubmit={handleTrack}
+                  className="flex flex-row gap-3 mb-6"
+                >
                   <div className="flex-1 relative">
                     <Input
                       type="text"
@@ -142,8 +156,18 @@ export default function HomePage() {
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
                         </svg>
                         Track
                       </>
@@ -152,7 +176,10 @@ export default function HomePage() {
                 </form>
                 <p className="text-center text-white  text-sm">
                   Don't have a tracking number?{" "}
-                  <Link href="/signup" className="text-primary font-semibold hover:underline">
+                  <Link
+                    href="/signup"
+                    className="text-primary font-semibold hover:underline"
+                  >
                     Create an account
                   </Link>
                 </p>
@@ -161,12 +188,14 @@ export default function HomePage() {
 
             {/* Rate & Ship Form */}
             {activeTab === "rate" && (
-              <motion.div 
-              className="max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-2xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              <motion.div
+                className="max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                <h3 className="text-2xl font-bold text-foreground mb-6">Get Shipping Quote</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-6">
+                  Get Shipping Quote
+                </h3>
                 <Link href="/calculator">
                   <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold">
                     Open Calculator
@@ -177,33 +206,45 @@ export default function HomePage() {
 
             {/* Locations Tab */}
             {activeTab === "consolidation" && (
-              <motion.div 
-              className="max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-2xl"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              <motion.div
+                className="max-w-4xl mx-auto bg-white rounded-lg p-8 shadow-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                <h3 className="text-2xl font-bold text-foreground mb-8">Consolidation Services</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-8">
+                  Consolidation Services
+                </h3>
 
                 {/* FAQ Section */}
                 <div className="space-y-6 mb-10">
                   <div className="border-l-4 border-primary pl-4">
-                    <h4 className="font-bold text-foreground mb-2 text-lg">What is Consolidation?</h4>
+                    <h4 className="font-bold text-foreground mb-2 text-lg">
+                      What is Consolidation?
+                    </h4>
                     <p className="text-foreground/70 text-sm mb-3">
-                      Consolidation is a cost-effective shipping method where multiple smaller shipments are combined
-                      into one larger shipment, reducing your per-unit shipping costs significantly.
+                      Consolidation is a cost-effective shipping method where
+                      multiple smaller shipments are combined into one larger
+                      shipment, reducing your per-unit shipping costs
+                      significantly.
                     </p>
                   </div>
 
                   <div className="border-l-4 border-primary pl-4">
-                    <h4 className="font-bold text-foreground mb-2 text-lg">How to Consolidate?</h4>
+                    <h4 className="font-bold text-foreground mb-2 text-lg">
+                      How to Consolidate?
+                    </h4>
                     <p className="text-foreground/70 text-sm mb-3">
-                      Simply send your individual packages to our China warehouse. We'll receive, inspect, and
-                      consolidate them into one shipment, then send to Nigeria at a fraction of the cost.
+                      Simply send your individual packages to our China
+                      warehouse. We'll receive, inspect, and consolidate them
+                      into one shipment, then send to Nigeria at a fraction of
+                      the cost.
                     </p>
                   </div>
 
                   <div className="border-l-4 border-primary pl-4">
-                    <h4 className="font-bold text-foreground mb-2 text-lg">Consolidation Benefits</h4>
+                    <h4 className="font-bold text-foreground mb-2 text-lg">
+                      Consolidation Benefits
+                    </h4>
                     <ul className="text-foreground/70 text-sm space-y-1">
                       <li>• Save up to 60% on shipping costs</li>
                       <li>• Flexible pickup scheduling</li>
@@ -215,7 +256,9 @@ export default function HomePage() {
 
                 {/* Warehouse Address Section */}
                 <div className="bg-primary/10 rounded-lg p-6 border border-primary/20 mb-6">
-                  <h4 className="font-bold text-foreground mb-4">China Warehouse Address</h4>
+                  <h4 className="font-bold text-foreground mb-4">
+                    China Warehouse Address
+                  </h4>
                   <div className="space-y-3">
                     <p className="text-foreground font-semibold text-sm">
                       Guangzhou Distribution Center
@@ -234,7 +277,12 @@ export default function HomePage() {
                       }
                       className="flex cursor-pointer items-center gap-2 text-primary hover:text-primary/80 font-semibold text-sm transition"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -263,11 +311,11 @@ export default function HomePage() {
         {/* Features Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
           <div className="max-w-7xl mx-auto">
-            <motion.h2 
-            className="text-3xl font-bold text-center text-foreground mb-12"
-            initial={{opacity: 0, x: -20}}
-            whileInView={{opacity: 1, x: 0}}
-            transition={{duration: 0.5}}
+            <motion.h2
+              className="text-3xl font-bold text-center text-foreground mb-12"
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
             >
               Why Choose SHIPGATE?
             </motion.h2>
@@ -282,42 +330,53 @@ export default function HomePage() {
                 {
                   icon: Globe,
                   title: "Competitive Pricing",
-                  description: "Air: $8.9/kg | Sea: $510/CBM or $5400-$7200 for containers.",
+                  description:
+                    "Direct partnerships with airlines and shipping companies ensure you get the best rates in the market.",
+
+                  // description:
+                  //   "Air: $8.9/kg | Sea: $510/CBM or $5400-$7200 for containers.",
                 },
                 {
                   icon: Shield,
                   title: "Secure & Reliable",
-                  description: "Your packages are insured and handled by professional logistics experts.",
+                  description:
+                    "Your packages are insured and handled by professional logistics experts.",
                 },
                 {
                   icon: Zap,
                   title: "Fast Processing",
-                  description: "Quick quote generation and efficient shipping management.",
+                  description:
+                    "Quick quote generation and efficient shipping management.",
                 },
                 {
                   icon: Truck,
                   title: "Multiple Shipping Options",
-                  description: "Choose between air and sea shipping based on your timeline and budget.",
+                  description:
+                    "Choose between air and sea shipping based on your timeline and budget.",
                 },
                 {
                   icon: Shield,
                   title: "24/7 Support",
-                  description: "Customer support via WhatsApp, email, and phone.",
+                  description:
+                    "Customer support via WhatsApp, email, and phone.",
                 },
               ].map((feature, index) => {
-                const Icon = feature.icon
+                const Icon = feature.icon;
                 return (
-                  <motion.div 
-                  key={index}
-                  initial={{opacity: 0, y: 20}}
-                  whileInView={{opacity: 1, y: 0}}
-                  transition={{duration: 0.5, delay: index * 0.2}}
-                  className="bg-white rounded-lg p-6 border border-border hover:shadow-lg transition">
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.2 }}
+                    className="bg-white rounded-lg p-6 border border-border hover:shadow-lg transition"
+                  >
                     <Icon className="w-10 h-10 text-primary mb-4" />
-                    <h3 className="text-xl font-semibold text-foreground mb-2">{feature.title}</h3>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">
+                      {feature.title}
+                    </h3>
                     <p className="text-foreground/70">{feature.description}</p>
                   </motion.div>
-                )
+                );
               })}
             </div>
           </div>
@@ -335,9 +394,12 @@ export default function HomePage() {
         {/* CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8 bg-primary text-white">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to Ship?</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+              Ready to Ship?
+            </h2>
             <p className="text-lg mb-8 opacity-90">
-              Get started today with SHIPGATE by Bowagate. Fast, transparent, and reliable shipping solutions.
+              Get started today with SHIPGATE by Bowagate. Fast, transparent,
+              and reliable shipping solutions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/calculator">
@@ -364,7 +426,9 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <h4 className="font-bold text-lg mb-4">SHIPGATE by Bowagate</h4>
-              <p className="text-sm opacity-80">Fast and reliable shipping from China to Nigeria.</p>
+              <p className="text-sm opacity-80">
+                Fast and reliable shipping from China to Nigeria.
+              </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
@@ -408,7 +472,9 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
-              <p className="text-sm opacity-80 mb-2">WhatsApp: +234 XXX XXX XXX</p>
+              <p className="text-sm opacity-80 mb-2">
+                WhatsApp: +234 XXX XXX XXX
+              </p>
               <p className="text-sm opacity-80">Email: support@</p>
             </div>
           </div>
@@ -418,5 +484,5 @@ export default function HomePage() {
         </footer>
       </main>
     </>
-  )
+  );
 }

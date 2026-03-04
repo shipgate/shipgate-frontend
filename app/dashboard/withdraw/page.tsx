@@ -1,59 +1,79 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { AlertCircle } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { AlertCircle } from "lucide-react";
+import { useWithdrawMutation } from "@/store/slice/apiSlice";
 
 export default function WithdrawPage() {
-  const walletBalance = 2500.0
-  const [amount, setAmount] = useState("")
-  const [accountNumber, setAccountNumber] = useState("")
-  const [accountName, setAccountName] = useState("")
-  const [bankName, setBankName] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [withdraw, { isLoading }] = useWithdrawMutation();
+
+  const walletBalance = 2500.0;
+  const [amount, setAmount] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [error, setError] = useState("");
 
   const handleWithdraw = async () => {
-    setError("")
+    setError("");
 
     if (!amount || Number.parseFloat(amount) <= 0) {
-      setError("Please enter a valid amount")
-      return
+      setError("Please enter a valid amount");
+      return;
     }
 
     if (Number.parseFloat(amount) > walletBalance) {
-      setError("Insufficient balance")
-      return
+      setError("Insufficient balance");
+      return;
     }
 
     if (!accountNumber || !accountName || !bankName) {
-      setError("Please fill in all bank details")
-      return
+      setError("Please fill in all bank details");
+      return;
     }
 
-    setLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    alert(`Successfully withdrawn ₦${amount} from your wallet`)
-    setAmount("")
-    setAccountNumber("")
-    setAccountName("")
-    setBankName("")
-    setLoading(false)
-  }
+    const withdrawData = {
+      amount: Number.parseFloat(amount),
+      bankName,
+      accountNumber,
+      accountName,
+    };
+
+    try {
+      await withdraw(withdrawData).unwrap();
+      setAmount("");
+      setAccountNumber("");
+      setAccountName("");
+      setBankName("");
+    } catch (err) {}
+  };
 
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">Withdraw Funds</h1>
-        <p className="text-foreground/60 text-sm md:text-base">Transfer funds from your wallet to your bank account</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+          Withdraw Funds
+        </h1>
+        <p className="text-foreground/60 text-sm md:text-base">
+          Transfer funds from your wallet to your bank account
+        </p>
       </div>
 
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="pt-6">
           <div className="flex gap-4">
-            <div className="text-2xl md:text-3xl font-bold text-primary">₦{walletBalance.toFixed(2)}</div>
+            <div className="text-2xl md:text-3xl font-bold text-primary">
+              ₦{walletBalance.toFixed(2)}
+            </div>
             <div>
               <p className="text-sm text-foreground/60">Available Balance</p>
               <p className="text-xs text-foreground/60">Ready to withdraw</p>
@@ -69,9 +89,13 @@ export default function WithdrawPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Amount (NGN)</label>
+            <label className="text-sm font-medium text-foreground">
+              Amount (NGN)
+            </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">₦</span>
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                ₦
+              </span>
               <Input
                 type="number"
                 placeholder="Enter amount"
@@ -98,7 +122,9 @@ export default function WithdrawPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Bank Name</label>
+            <label className="text-sm font-medium text-foreground">
+              Bank Name
+            </label>
             <Input
               placeholder="e.g., GTBank, Access Bank"
               value={bankName}
@@ -107,12 +133,20 @@ export default function WithdrawPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Account Name</label>
-            <Input placeholder="Your full name" value={accountName} onChange={(e) => setAccountName(e.target.value)} />
+            <label className="text-sm font-medium text-foreground">
+              Account Name
+            </label>
+            <Input
+              placeholder="Your full name"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Account Number</label>
+            <label className="text-sm font-medium text-foreground">
+              Account Number
+            </label>
             <Input
               placeholder="Your account number"
               value={accountNumber}
@@ -131,11 +165,11 @@ export default function WithdrawPage() {
 
       <Button
         onClick={handleWithdraw}
-        disabled={loading || !amount || !accountNumber}
+        disabled={isLoading || !amount || !accountNumber}
         className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3"
       >
-        {loading ? "Processing..." : `Withdraw ₦${amount || "0"}`}
+        {isLoading ? "Processing..." : `Withdraw ₦${amount || "0"}`}
       </Button>
     </div>
-  )
+  );
 }

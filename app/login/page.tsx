@@ -1,124 +1,114 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { googleLogin } from "@/lib/googleLogin"
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff } from "lucide-react"
-import { Navbar } from "@/components/navbar"
+import type React from "react";
+import { googleLogin } from "@/lib/googleLogin";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
+import { Navbar } from "@/components/navbar";
 
-import { useAuthStore } from "@/store/authStore"
+import { useAuthStore } from "@/store/authStore";
+import { useLoginMutation } from "@/store/slice/apiSlice";
+import { useAppRouter } from "@/hooks/useRoute";
+import { useAppSelector } from "@/hooks/useStore";
 
 export default function LoginPage() {
-  const router = useRouter()
+  const router = useAppRouter();
+  const [loginMutate, { data, isLoading: loginIsLoading }] = useLoginMutation();
 
-  const { login,resendVerification, googleAuth,  isLoading, localError } = useAuthStore()
-  const [showPassword, setShowPassword] = useState(false)
-  const [formData, setFormData] = useState({ email: "", password: "" })
-  const [error, setError] = useState("")
-  const [infoMessage, setInfoMessage] = useState("")
-  const [success, setSuccess] = useState(false)
+  const { login, resendVerification, googleAuth, isLoading, localError } =
+    useAuthStore();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [infoMessage, setInfoMessage] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    setError("")
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-        if (!formData.email || !formData.password) {
-      setError("Please fill in all fields")
-      return
+    if (!formData.email || !formData.password) {
+      setError("Please fill in all fields");
+      return;
     }
 
-    try {
-      await login({
-        email: formData.email,
-        password: formData.password,
-      })
+    loginMutate({
+      email: formData.email,
+      password: formData.password,
+    });
 
-      // ✅ Redirect after successful login
-      window.location.href = "/dashboard"
-    } catch {
-      // error already handled in Zustand
-    }
-
-
-    // try {
-      // Validate inputs
-      // if (!formData.email || !formData.password) {
-      //   setError("Please fill in all fields")
-      //   setLoading(false)
-      //   return
-      // }
-
-      // Mock login - in production, this would call your auth API
-      // console.log("Login attempt:", formData)
-
-      // Simulate API delay
-      // await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Store in localStorage (mock)
-      // localStorage.setItem("user", JSON.stringify({ email: formData.email }))
-
-      // Redirect to dashboard
+    // Redirect to dashboard
     //   window.location.href = "/dashboard"
     // } catch (err) {
     //   setError("Login failed. Please try again.")
     // } finally {
     //   setLoading(false)
     // }
-  }
+  };
 
-    /*  RESEND VERIFICATION  */
+  useEffect(() => {
+    if (data) {
+      // Successful login
+      router.push("/dashboard");
+    }
+  }, [data]);
+
+  /*  RESEND VERIFICATION  */
   const handleResendVerification = async () => {
     try {
-      await resendVerification({ email: formData.email })
-      setInfoMessage("Verification email sent. Check your inbox.")
+      await resendVerification({ email: formData.email });
+      setInfoMessage("Verification email sent. Check your inbox.");
     } catch {
       // handled in store
     }
-  }
+  };
 
-  
-
-    /*  GOOGLE AUTH  */
-   const handleGoogleLogin = async () => {
-  try {
-    const idToken = await googleLogin() // 🔥 REAL TOKEN
-    await googleAuth({ idToken })
-    window.location.href = "/dashboard"
-  } catch (err) {
-    console.error(err)
-  }
-}
-
+  /*  GOOGLE AUTH  */
+  const handleGoogleLogin = async () => {
+    try {
+      const idToken = await googleLogin(); // 🔥 REAL TOKEN
+      await googleAuth({ idToken });
+      window.location.href = "/dashboard";
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="h-screen w-full">
       <Navbar />
       <div className="min-h-screen bg-gradient-to-br from-background to-secondary flex items-center justify-center px-4 py-12">
-        
         <Card className="w-full max-w-md shadow-lg border-border/50">
           <CardHeader className="space-y-2">
-            
-
-
             <CardTitle className="text-2xl">Welcome Back</CardTitle>
-            <CardDescription>Sign in to access your logistics dashboard</CardDescription>
+            <CardDescription>
+              Sign in to access your logistics dashboard
+            </CardDescription>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Field */}
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-foreground"
+                >
                   Email Address
                 </label>
                 <Input
@@ -128,14 +118,17 @@ export default function LoginPage() {
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={loginIsLoading}
                   className="bg-background border-border focus:ring-primary"
                 />
               </div>
 
               {/* Password Field */}
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-foreground"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -146,7 +139,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                   disabled={isLoading}
+                    disabled={loginIsLoading}
                     className="bg-background border-border focus:ring-primary pr-10"
                   />
                   <button
@@ -171,7 +164,7 @@ export default function LoginPage() {
                 <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-md text-sm text-destructive">
                   {error || localError}
 
-                   {/* RESEND BUTTON */}
+                  {/* RESEND BUTTON */}
                   {error?.toLowerCase().includes("verify") && (
                     <button
                       type="button"
@@ -184,57 +177,67 @@ export default function LoginPage() {
                 </div>
               )}
 
-                 {/* Info Message */}
-                  {infoMessage && (
-                    <div className="p-3 bg-green-100 border rounded text-sm text-green-700">
-                      {infoMessage}
-                    </div>
-                  )}
+              {/* Info Message */}
+              {infoMessage && (
+                <div className="p-3 bg-green-100 border rounded text-sm text-green-700">
+                  {infoMessage}
+                </div>
+              )}
 
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={loginIsLoading}
                 onClick={handleSubmit}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium h-10"
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {loginIsLoading ? "Signing in..." : "Sign In"}
               </Button>
 
               {/* Divider */}
-              <div className="relative my-4">
+              {/* <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-border"></div>
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="flex space-x-4">
+              {/* <div className="flex space-x-4">
                 <Button
                   variant="outline"
                   className="flex-1 bg-background border-border hover:bg-black/30 hover:border-black/30 h-10 cursor-pointer"
-                  disabled={isLoading}
+                  disabled={loginIsLoading}
                   onClick={handleGoogleLogin}
                 >
-                  <img src="/google.png" alt="Google" className="w-4 h-4 mr-2" /> Google
+                  <img
+                    src="/google.png"
+                    alt="Google"
+                    className="w-4 h-4 mr-2"
+                  />{" "}
+                  Google
                 </Button>
                 <Button
                   variant="outline"
                   className="flex-1 bg-background hover:bg-black/30 cursor-pointer border-border hover:border-black/30 h-10"
-                  disabled={isLoading}
+                  disabled={loginIsLoading}
                 >
-                  <img src="/apple.png" alt="Google" className="w-4 h-4 mr-2" /> Apple
+                  <img src="/apple.png" alt="Google" className="w-4 h-4 mr-2" />{" "}
+                  Apple
                 </Button>
-              </div>
-              
+              </div> */}
             </form>
 
             {/* Sign Up Link */}
             <div className="mt-6 text-center text-sm text-muted-foreground">
               Don't have an account?{" "}
-              <Link href="/signup" className="text-primary font-medium hover:underline">
+              <Link
+                href="/signup"
+                className="text-primary font-medium hover:underline"
+              >
                 Sign up here
               </Link>
             </div>
@@ -242,5 +245,5 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -15,45 +15,45 @@ export const useAuthStore = create(
 
       /*  REGISTER  */
       register: async (payload) => {
-  set({ isLoading: true, error: null })
+        set({ isLoading: true, error: null });
 
-  try {
-    const res = await fetch(
-      "https://shipgate-application.onrender.com/api/auth/register",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    )
+        try {
+          const res = await fetch(
+            "https://shipgate-application.onrender.com/api/auth/register",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
 
-    if (!res.ok) {
-      const errorData = await res.json()
-      console.error("BACKEND REGISTER ERROR:", errorData)
+          if (!res.ok) {
+            const errorData = await res.json();
+            console.error("BACKEND REGISTER ERROR:", errorData);
 
-      throw new Error(
-        errorData.message ||
-        errorData.error ||
-        JSON.stringify(errorData)
-      )
-    }
+            throw new Error(
+              errorData.message || errorData.error || JSON.stringify(errorData)
+            );
+          }
 
-    const data = await res.json()
+          const data = await res.json();
 
-    set({
-      user: data.user || null,
-      token: data.token || null,
-      isLoading: false,
-    })
+          set({
+            user: data.user || null,
+            token: data.token || null,
+            isLoading: false,
+          });
 
-    return data
-  } catch (err) {
-    console.error("REGISTER CATCH:", err)
-    set({ error: err.message || "Registration failed", isLoading: false })
-    throw err
-  }
-},
-
+          return data;
+        } catch (err) {
+          console.error("REGISTER CATCH:", err);
+          set({
+            error: err.message || "Registration failed",
+            isLoading: false,
+          });
+          throw err;
+        }
+      },
 
       /*  LOGIN  */
       login: async (payload) => {
@@ -61,11 +61,14 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null });
 
         try {
-          const res = await fetch("https://shipgate-application.onrender.com/api/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const res = await fetch(
+            "https://shipgate-application.onrender.com/api/auth/login",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
 
           if (!res.ok) {
             const err = await res.json();
@@ -73,6 +76,8 @@ export const useAuthStore = create(
           }
 
           const data = await res.json();
+
+          console.log("REGISTER SUCCESS:", data);
 
           set({
             user: data.user,
@@ -93,11 +98,14 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null });
 
         try {
-          const res = await fetch("https://shipgate-application.onrender.com/api/auth/verify-email", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const res = await fetch(
+            "https://shipgate-application.onrender.com/api/auth/verify-email",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
 
           if (!res.ok) {
             const err = await res.json();
@@ -124,11 +132,14 @@ export const useAuthStore = create(
         set({ isLoading: true, error: null });
 
         try {
-          const res = await fetch("https://shipgate-application.onrender.com/api/auth/resend-verification", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const res = await fetch(
+            "https://shipgate-application.onrender.com/api/auth/resend-verification",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
 
           if (!res.ok) {
             const err = await res.json();
@@ -146,40 +157,37 @@ export const useAuthStore = create(
       },
 
       /*  GOOGLE AUTH */
- googleAuth: async (payload) => {
-  set({ isLoading: true, error: null })
+      googleAuth: async (payload) => {
+        set({ isLoading: true, error: null });
 
-  try {
-    const res = await fetch(
-      "https://shipgate-application.onrender.com/api/auth/google",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }
-    )
+        try {
+          const res = await fetch(
+            "https://shipgate-application.onrender.com/api/auth/google",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            }
+          );
 
-    const data = await res.json()
+          const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message || "Google auth failed")
-    }
+          if (!res.ok) {
+            throw new Error(data.message || "Google auth failed");
+          }
 
-    set({
-      user: data.user,
-      token: data.token,
-      isLoading: false,
-    })
+          set({
+            user: data.user,
+            token: data.token,
+            isLoading: false,
+          });
 
-    return true
-  } catch (err) {
-    set({ error: err.message, isLoading: false })
-    throw err
-  }
-},
-
-
-
+          return true;
+        } catch (err) {
+          set({ error: err.message, isLoading: false });
+          throw err;
+        }
+      },
 
       /*  LOGOUT */
       logout: () => {
@@ -191,3 +199,7 @@ export const useAuthStore = create(
     }
   )
 );
+
+export const getAuthToken = () => {
+  return useAuthStore.getState().token;
+};

@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Navbar } from "@/components/navbar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Search, Calendar, User, ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react";
+import { Navbar } from "@/components/navbar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Search, Calendar, User, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useGetBlogsQuery } from "@/store/slice/apiSlice";
 
 const blogPosts = [
   {
@@ -28,7 +29,8 @@ const blogPosts = [
     id: 2,
     slug: "air-vs-sea-shipping",
     title: "Air vs Sea Shipping: Which One is Right for You?",
-    excerpt: "Compare air and sea shipping options to make the best choice for your business needs and budget.",
+    excerpt:
+      "Compare air and sea shipping options to make the best choice for your business needs and budget.",
     content:
       "Air shipping is faster but more expensive. Sea shipping is economical for large volumes. Consider your timeline and volume requirements.",
     author: "Sarah Johnson",
@@ -93,21 +95,23 @@ const blogPosts = [
     image: "/currency-exchange-rates.jpg",
     readTime: "5 min read",
   },
-]
+];
 
 export default function BlogPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const { data: blogPosts, isLoading } = useGetBlogsQuery({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const filteredPosts = blogPosts.filter((post) => {
+  const filteredPosts = blogPosts?.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = !selectedCategory || post.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      !selectedCategory || post.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
-  const categories = Array.from(new Set(blogPosts.map((p) => p.category)))
+  const categories = Array.from(new Set(blogPosts?.map((p) => p?.category)));
 
   return (
     <>
@@ -116,9 +120,12 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-3">Blog & Resources</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-3">
+              Blog & Resources
+            </h1>
             <p className="text-lg text-foreground/70">
-              Expert tips, guides, and updates about shipping from China to Nigeria
+              Expert tips, guides, and updates about shipping from China to
+              Nigeria
             </p>
           </div>
 
@@ -150,7 +157,7 @@ export default function BlogPage() {
                   >
                     All Articles
                   </button>
-                  {categories.map((category) => (
+                  {categories?.map((category) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -170,8 +177,8 @@ export default function BlogPage() {
 
           {/* Blog Posts Grid */}
           <div className="space-y-6">
-            {filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => (
+            {filteredPosts?.length > 0 ? (
+              filteredPosts?.map((post) => (
                 <Link key={post.id} href={`/blog/${post.slug}`}>
                   <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                     <div className="grid md:grid-cols-4 h-full">
@@ -189,13 +196,21 @@ export default function BlogPage() {
                         <div className="flex flex-col justify-between h-full">
                           <div>
                             <div className="flex items-center gap-2 mb-3">
-                              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">{post.category}</Badge>
-                              <span className="text-xs text-foreground/60">{post.readTime}</span>
+                              <Badge className="bg-primary/10 text-primary hover:bg-primary/20">
+                                {post.category}
+                              </Badge>
+                              <span className="text-xs text-foreground/60">
+                                {post.readTime}
+                              </span>
                             </div>
 
-                            <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">{post.title}</h3>
+                            <h3 className="text-xl font-bold text-foreground mb-2 line-clamp-2">
+                              {post.title}
+                            </h3>
 
-                            <p className="text-foreground/70 text-sm mb-4 line-clamp-2">{post.excerpt}</p>
+                            <p className="text-foreground/70 text-sm mb-4 line-clamp-2">
+                              {post.excerpt}
+                            </p>
                           </div>
 
                           <div className="flex items-center justify-between">
@@ -220,11 +235,13 @@ export default function BlogPage() {
             ) : (
               <Card>
                 <CardContent className="pt-12 text-center pb-12">
-                  <p className="text-foreground/60 mb-4">No articles found matching your search.</p>
+                  <p className="text-foreground/60 mb-4">
+                    No articles found matching your search.
+                  </p>
                   <Button
                     onClick={() => {
-                      setSearchTerm("")
-                      setSelectedCategory(null)
+                      setSearchTerm("");
+                      setSelectedCategory(null);
                     }}
                     variant="outline"
                   >
@@ -239,13 +256,22 @@ export default function BlogPage() {
           <Card className="mt-16 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
             <CardContent className="pt-8">
               <div className="text-center">
-                <h3 className="text-2xl font-bold text-foreground mb-2">Stay Updated</h3>
+                <h3 className="text-2xl font-bold text-foreground mb-2">
+                  Stay Updated
+                </h3>
                 <p className="text-foreground/70 mb-6 max-w-md mx-auto">
-                  Subscribe to get the latest shipping tips, fee updates, and exchange rate alerts.
+                  Subscribe to get the latest shipping tips, fee updates, and
+                  exchange rate alerts.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-                  <Input type="email" placeholder="your@email.com" className="h-12" />
-                  <Button className="bg-primary hover:bg-primary/90 text-white px-8 h-12">Subscribe</Button>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    className="h-12"
+                  />
+                  <Button className="bg-primary hover:bg-primary/90 text-white px-8 h-12">
+                    Subscribe
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -253,5 +279,5 @@ export default function BlogPage() {
         </div>
       </main>
     </>
-  )
+  );
 }

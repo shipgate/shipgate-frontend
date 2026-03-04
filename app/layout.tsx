@@ -1,18 +1,21 @@
-import type React from "react"
-import type { Metadata } from "next"
-import Script from "next/script"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { Toaster } from "@/components/ui/sonner"
-import { AnimatePresence, motion } from "motion/react"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import Script from "next/script";
+import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "@/components/ui/sonner";
+import { ToastContainer } from "react-toastify";
+import { AnimatePresence, motion } from "motion/react";
+import "./globals.css";
+import { StoreProvider } from "@/store/storeProvider";
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "SHIPGATE by Bowagate - China to Nigeria Shipping",
-  description: "Fast, reliable shipping from China to Nigeria with real-time tracking",
+  description:
+    "Fast, reliable shipping from China to Nigeria with real-time tracking",
   generator: "v0.app",
   icons: {
     icon: [
@@ -31,31 +34,37 @@ export const metadata: Metadata = {
     ],
     apple: "/apple-icon.png",
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com"/> 
-        <link rel="preconnect" href="https://fonts.gstatic.com"  />
-        <link href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" rel="stylesheet"></link>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"
+          rel="stylesheet"
+        ></link>
       </head>
-      <body  style={{fontFamily: `"Onest", sans-serif`}}>
-          <Script
+      <body style={{ fontFamily: `"Onest", sans-serif` }}>
+        <Script
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
         />
         <Toaster />
-        <AnimatePresence> 
-        {children}
+        <AnimatePresence>
+          <StoreProvider>
+            <ToastContainer />
+            {children}
+          </StoreProvider>
         </AnimatePresence>
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

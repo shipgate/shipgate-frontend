@@ -1,14 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Navbar } from "@/components/navbar"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ShippingCalculator } from "@/components/calculator/shipping-calculator"
-import { RFQForm } from "@/components/calculator/rfq-form"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState } from "react";
+import { Navbar } from "@/components/navbar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ShippingCalculator } from "@/components/calculator/shipping-calculator";
+import { RFQForm } from "@/components/calculator/rfq-form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGetShippingMethodQuery } from "@/store/slice/apiSlice";
 
 export default function CalculatorPage() {
-  const [activeTab, setActiveTab] = useState("calculator")
+  const [activeTab, setActiveTab] = useState("calculator");
+  const { data, isLoading } = useGetShippingMethodQuery({});
+
+  const [shippingType, setShippingType] = useState<"Air" | "Sea">("Air");
+  const [weight, setWeight] = useState<number>(0);
+  const [length, setLength] = useState<number>(0);
+  const [width, setWidth] = useState<number>(0);
+  const [height, setHeight] = useState<number>(0);
+  const [cbm, setCbm] = useState<number>(0);
+  const [containerType, setContainerType] = useState<"20ft" | "40ft">("20ft");
+  const [quantity, setQuantity] = useState<number>(1);
 
   return (
     <>
@@ -17,14 +34,21 @@ export default function CalculatorPage() {
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-12">
-            <h1 className="text-4xl font-bold text-foreground mb-3">Shipping Calculator</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-3">
+              Shipping Calculator
+            </h1>
             <p className="text-lg text-foreground/70">
-              Get instant quotes for your shipments or submit a Request for Quote (RFQ)
+              Get instant quotes for your shipments or submit a Request for
+              Quote (RFQ)
             </p>
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="calculator">Quick Calculator</TabsTrigger>
               <TabsTrigger value="rfq">Request for Quote</TabsTrigger>
@@ -32,12 +56,37 @@ export default function CalculatorPage() {
 
             {/* Calculator Tab */}
             <TabsContent value="calculator">
-              <ShippingCalculator />
+              <ShippingCalculator
+                onRequestQuote={() => setActiveTab("rfq")}
+                data={data}
+                isLoading={isLoading}
+                width={width}
+                height={height}
+                length={length}
+                weight={weight}
+                cbm={cbm}
+                containerType={containerType}
+                quantity={quantity}
+                shippingType={shippingType}
+                setShippingType={setShippingType}
+                setWeight={setWeight}
+                setLength={setLength}
+                setWidth={setWidth}
+                setHeight={setHeight}
+                setCbm={setCbm}
+                setContainerType={setContainerType}
+                setQuantity={setQuantity}
+              />
             </TabsContent>
 
             {/* RFQ Tab */}
             <TabsContent value="rfq">
-              <RFQForm />
+              <RFQForm
+                weight={weight}
+                containerType={containerType}
+                cbm={cbm}
+                shippingType={shippingType}
+              />
             </TabsContent>
           </Tabs>
 
@@ -51,9 +100,20 @@ export default function CalculatorPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <p className="text-2xl font-bold text-foreground">
-                    $8.90 <span className="text-lg font-normal text-foreground/60">/kg</span>
+                    $ {isLoading ? "...loading" : " "}
+                    {data
+                      ?.find(
+                        (method: { shippingTypeEnum: string }) =>
+                          method.shippingTypeEnum === "Air",
+                      )
+                      ?.price?.toFixed(2) || "0.00"}{" "}
+                    <span className="text-lg font-normal text-foreground/60">
+                      /kg
+                    </span>
                   </p>
-                  <p className="text-sm text-foreground/70">Minimum charge may apply</p>
+                  <p className="text-sm text-foreground/70">
+                    Minimum charge may apply
+                  </p>
                 </div>
                 <ul className="space-y-2 text-sm text-foreground/70">
                   <li className="flex items-center gap-2">
@@ -85,17 +145,41 @@ export default function CalculatorPage() {
                 <div className="space-y-3">
                   <div>
                     <p className="font-semibold text-foreground">Per CBM</p>
-                    <p className="text-2xl font-bold text-foreground">$510</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      $ {isLoading ? "...loading" : " "}
+                      {data
+                        ?.find(
+                          (method: { shippingTypeEnum: string }) =>
+                            method.shippingTypeEnum === "Sea",
+                        )
+                        ?.price?.toFixed(2) || "0.00"}
+                    </p>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <p className="font-semibold text-foreground">20ft Container</p>
-                      <p className="text-xl font-bold text-foreground">$5,400</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">40ft Container</p>
-                      <p className="text-xl font-bold text-foreground">$7,200</p>
-                    </div>
+                    {data
+                      ?.find(
+                        (method: { shippingTypeEnum: string }) =>
+                          method?.shippingTypeEnum === "Sea",
+                      )
+                      ?.containers?.map(
+                        (
+                          container: {
+                            containerSize: string;
+                            price: number;
+                            measurement: string;
+                          },
+                          index: number,
+                        ) => (
+                          <div key={index}>
+                            <p className="font-semibold text-foreground">
+                              {container?.containerSize}ft Container
+                            </p>
+                            <p className="text-xl font-bold text-foreground">
+                              ${container.price?.toFixed(2) || "0.00"}
+                            </p>
+                          </div>
+                        ),
+                      )}
                   </div>
                 </div>
                 <ul className="space-y-2 text-sm text-foreground/70">
@@ -122,7 +206,9 @@ export default function CalculatorPage() {
 
           {/* FAQ Section */}
           <div className="mt-12">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Frequently Asked Questions</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">
+              Frequently Asked Questions
+            </h2>
             <div className="grid md:grid-cols-2 gap-6">
               {[
                 {
@@ -144,7 +230,9 @@ export default function CalculatorPage() {
               ].map((item, idx) => (
                 <Card key={idx} className="border-l-4 border-l-primary">
                   <CardContent className="pt-6">
-                    <h4 className="font-semibold text-foreground mb-2">{item.q}</h4>
+                    <h4 className="font-semibold text-foreground mb-2">
+                      {item.q}
+                    </h4>
                     <p className="text-foreground/70 text-sm">{item.a}</p>
                   </CardContent>
                 </Card>
@@ -154,5 +242,5 @@ export default function CalculatorPage() {
         </div>
       </main>
     </>
-  )
+  );
 }

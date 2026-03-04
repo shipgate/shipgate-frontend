@@ -1,142 +1,115 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff, Check, X } from "lucide-react"
-import { Navbar } from "@/components/navbar"
-import { useAuthStore } from "@/store/authStore"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Eye, EyeOff, Check, X } from "lucide-react";
+import { Navbar } from "@/components/navbar";
+import { useAuthStore } from "@/store/authStore";
+import { useRouter } from "next/navigation";
+import { useSignupMutation } from "@/store/slice/apiSlice";
 
 export default function SignupPage() {
-   const [infoMessage, setInfoMessage] = useState("")
-  const { register, isLoading, } = useAuthStore()
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [signupMutate, { data, isLoading: signupIsLoading }] =
+    useSignupMutation();
+
+  const [infoMessage, setInfoMessage] = useState("");
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     company: "",
-    address:"",
+    address: "",
     phone: "",
     password: "",
     confirmPassword: "",
     acceptTerms: false,
-  })
-  const [error, setError] = useState("")
-  const [passwordStrength, setPasswordStrength] = useState(0)
+  });
+  const [error, setError] = useState("");
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
-    }))
-    setError("")
+    }));
+    setError("");
 
     // Calculate password strength
     if (name === "password") {
-      let strength = 0
-      if (value.length >= 8) strength++
-      if (/[a-z]/.test(value) && /[A-Z]/.test(value)) strength++
-      if (/\d/.test(value)) strength++
-      if (/[^a-zA-Z\d]/.test(value)) strength++
-      console.log("Password strength:", strength)
-      setPasswordStrength(strength)
+      let strength = 0;
+      if (value.length >= 8) strength++;
+      if (/[a-z]/.test(value) && /[A-Z]/.test(value)) strength++;
+      if (/\d/.test(value)) strength++;
+      if (/[^a-zA-Z\d]/.test(value)) strength++;
+      console.log("Password strength:", strength);
+      setPasswordStrength(strength);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-      setError("")
-      console.log("REGISTER SUBMITTED") // 👈 ADD THIS
+    e.preventDefault();
+    setError("");
+    console.log("REGISTER SUBMITTED"); // 👈 ADD THIS
 
-      // Validate inputs
-      if (!formData.fullName || !formData.email || !formData.password) {
-        setError("Please fill in all required fields")
-    
-        return
-      }
+    // Validate inputs
+    if (!formData.fullName || !formData.email || !formData.password) {
+      setError("Please fill in all required fields");
 
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match")
-   
-        return
-      }
+      return;
+    }
 
-      if (formData.password.length < 8) {
-        setError("Password must be at least 8 characters long")
-      
-        return
-      }
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
 
-      if (!formData.acceptTerms) {
-        setError("Please accept the terms and conditions")
-    
-        return
-      }
+      return;
+    }
 
-   
-   try {
-  console.log("Calling register with:", {
-    fullName: formData.fullName,
-    email: formData.email,
-    company: formData.company,
-    address: formData.address,
-    phone: formData.phone,
-    password: formData.password,
-  })
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
 
-  const success = await register({
-    fullName: formData.fullName,
-    email: formData.email,
-    companyName: formData.company,
-    address: formData.address,
-    phoneNumber: formData.phone,
-    password: formData.password,
-  })
+      return;
+    }
 
-  console.log("Register response:", success)
+    if (!formData.acceptTerms) {
+      setError("Please accept the terms and conditions");
 
-  if (success) {
-    router.push("/verify-email")
-  }
-} catch (err) {
-  console.error("REGISTER FAILED:", err)
-}
+      return;
+    }
+
+    signupMutate({
+      fullName: formData.fullName,
+      email: formData.email,
+      companyName: formData.company,
+      address: formData.address,
+      phoneNumber: formData.phone,
+      password: formData.password,
+    });
 
 
-  
-}
+  };
 
-      // Mock signup - in production, this would call your auth API
-      // console.log("Signup attempt:", formData)
-
-      // Simulate API delay
-      // await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // Store in localStorage (mock)
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     fullName: formData.fullName,
-      //     email: formData.email,
-      //     company: formData.company,
-      //     phone: formData.phone,
-      //   }),
-      // )
-
-      // Redirect to dashboard
-      // window.location.href = "/dashboard"
-    
+  useEffect(() => {
+    if (data) {
+      // Successful login
+      router.push("/verify-email");
+    }
+  }, [data]);
 
   /*  RESEND VERIFICATION  */
-
 
   const passwordStrengthColor = {
     0: "bg-border",
@@ -144,7 +117,7 @@ export default function SignupPage() {
     2: "bg-yellow-500",
     3: "bg-blue-500",
     4: "bg-green-500",
-  }
+  };
 
   return (
     <div>
@@ -153,14 +126,19 @@ export default function SignupPage() {
         <Card className="w-full max-w-md shadow-lg border-border/50">
           <CardHeader className="space-y-2">
             <CardTitle className="text-2xl">Create Account</CardTitle>
-            <CardDescription>Join SHIPGATE to start shipping today</CardDescription>
+            <CardDescription>
+              Join SHIPGATE to start shipping today
+            </CardDescription>
           </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-3">
               {/* Full Name */}
               <div className="space-y-2">
-                <label htmlFor="fullName" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="fullName"
+                  className="text-sm font-medium text-foreground"
+                >
                   Full Name *
                 </label>
                 <Input
@@ -170,14 +148,17 @@ export default function SignupPage() {
                   placeholder="John Doe"
                   value={formData.fullName}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={signupIsLoading}
                   className="bg-background border-border focus:ring-primary"
                 />
               </div>
 
               {/* Email */}
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-medium text-foreground"
+                >
                   Email Address *
                 </label>
                 <Input
@@ -187,14 +168,17 @@ export default function SignupPage() {
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={signupIsLoading}
                   className="bg-background border-border focus:ring-primary"
                 />
               </div>
 
               {/* Company */}
               <div className="space-y-2">
-                <label htmlFor="company" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="company"
+                  className="text-sm font-medium text-foreground"
+                >
                   Company Name
                 </label>
                 <Input
@@ -204,14 +188,17 @@ export default function SignupPage() {
                   placeholder="Your Company"
                   value={formData.company}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={signupIsLoading}
                   className="bg-background border-border focus:ring-primary"
                 />
               </div>
 
-               {/* Address */}
+              {/* Address */}
               <div className="space-y-2">
-                <label htmlFor="company" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="company"
+                  className="text-sm font-medium text-foreground"
+                >
                   Address
                 </label>
                 <Input
@@ -221,14 +208,17 @@ export default function SignupPage() {
                   placeholder="Your Address"
                   value={formData.address}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={signupIsLoading}
                   className="bg-background border-border focus:ring-primary"
                 />
               </div>
 
               {/* Phone */}
               <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="phone"
+                  className="text-sm font-medium text-foreground"
+                >
                   Phone Number
                 </label>
                 <Input
@@ -238,14 +228,17 @@ export default function SignupPage() {
                   placeholder="+234 800 000 0000"
                   value={formData.phone}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={signupIsLoading}
                   className="bg-background border-border focus:ring-primary"
                 />
               </div>
 
               {/* Password */}
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-foreground"
+                >
                   Password *
                 </label>
                 <div className="relative">
@@ -256,7 +249,7 @@ export default function SignupPage() {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
-                    disabled={isLoading}
+                    disabled={signupIsLoading}
                     className="bg-background border-border focus:ring-primary pr-10"
                   />
                   <button
@@ -275,7 +268,9 @@ export default function SignupPage() {
                         key={i}
                         className={`h-1 flex-1 rounded-full transition-colors ${
                           i <= passwordStrength
-                            ? passwordStrengthColor[passwordStrength as keyof typeof passwordStrengthColor]
+                            ? passwordStrengthColor[
+                                passwordStrength as keyof typeof passwordStrengthColor
+                              ]
                             : "bg-border"
                         }`}
                       />
@@ -293,7 +288,10 @@ export default function SignupPage() {
 
               {/* Confirm Password */}
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium text-foreground"
+                >
                   Confirm Password *
                 </label>
                 <div className="relative">
@@ -304,7 +302,7 @@ export default function SignupPage() {
                     placeholder="••••••••"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    disabled={isLoading}
+                    disabled={signupIsLoading}
                     className="bg-background border-border focus:ring-primary pr-10"
                   />
                   <button
@@ -312,7 +310,11 @@ export default function SignupPage() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
                   </button>
                 </div>
                 {formData.password && formData.confirmPassword && (
@@ -325,7 +327,9 @@ export default function SignupPage() {
                     ) : (
                       <>
                         <X className="w-4 h-4 text-destructive" />
-                        <span className="text-destructive">Passwords don't match</span>
+                        <span className="text-destructive">
+                          Passwords don't match
+                        </span>
                       </>
                     )}
                   </div>
@@ -340,10 +344,13 @@ export default function SignupPage() {
                   type="checkbox"
                   checked={formData.acceptTerms}
                   onChange={handleChange}
-                  disabled={isLoading}
+                  disabled={signupIsLoading}
                   className="mt-1 w-4 h-4 border border-border rounded bg-background cursor-pointer accent-primary"
                 />
-                <label htmlFor="acceptTerms" className="text-sm text-muted-foreground cursor-pointer">
+                <label
+                  htmlFor="acceptTerms"
+                  className="text-sm text-muted-foreground cursor-pointer"
+                >
                   I agree to the{" "}
                   <Link href="#" className="text-primary hover:underline">
                     Terms and Conditions
@@ -365,17 +372,20 @@ export default function SignupPage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={signupIsLoading}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium h-10 mt-4"
               >
-                {isLoading ? "Creating account..." : "Create Account"}
+                {signupIsLoading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 
             {/* Sign In Link */}
             <div className="mt-6 text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="text-primary font-medium hover:underline">
+              <Link
+                href="/login"
+                className="text-primary font-medium hover:underline"
+              >
                 Sign in here
               </Link>
             </div>
@@ -383,5 +393,5 @@ export default function SignupPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
