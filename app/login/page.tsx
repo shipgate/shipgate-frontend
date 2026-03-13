@@ -66,9 +66,24 @@ export default function LoginPage() {
       // Successful login
       console.log(data.role);
 
-      // SuperAdmin
-      // Customer
-      // 
+      // SuperAdmin /super-admin/dashboard
+      // Customer /dashboard
+      // Admin - /admin/dashboard
+      // OperationsStaff - /staff/dashboard
+      // Courier - /courier/dashboard
+
+      switch (data.role) {
+        case "SuperAdmin":
+          return router.push("/super-admin/dashboard");
+        case "Customer":
+          return router.push("/dashboard");
+        case "Admin":
+          return router.push("/admin/dashboard");
+        case "OperationsStaff":
+          return router.push("/staff/dashboard");
+        case "Courier":
+          return router.push("/courier/dashboard");
+      }
 
       // router.push("/dashboard");
     }
