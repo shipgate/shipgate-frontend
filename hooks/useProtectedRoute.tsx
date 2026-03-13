@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./useStore";
 
-type Role = "Customer" | "SuperAdmin" | string;
+type Role = "Customer" | "SuperAdmin" | "Courier" | "Admin" | "OperationsStaff";
 
 export const useProtectedRoute = (role: Role) => {
   const router = useRouter();
