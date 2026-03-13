@@ -23,6 +23,8 @@ export default function DashboardPage() {
   const [shipmentCount] = useState(12);
   const [totalSpent] = useState(8450.5);
   const username = useAppSelector((state) => state.auth.user?.fullName);
+  const userdata = useAppSelector((state) => state.auth.user);
+  console.log(userdata);
 
   const { data, isLoading } = useGetShipmentsQuery({});
 

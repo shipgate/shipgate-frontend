@@ -1,28 +1,32 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
-import { useState } from "react"
-import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { Sidebar } from "@/components/dashboard/sidebar"
-import { Menu, X } from "lucide-react"
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { Sidebar } from "@/components/dashboard/sidebar";
+import { Menu, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/hooks/useStore";
+import { logoutUser } from "@/store/slice/authSlice";
+import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isAuthenticated = useProtectedRoute("Customer");
+  if (!isAuthenticated) return null;
 
   return (
     <>
-      <DashboardHeader setmobileMenuOpen={setMobileMenuOpen} mobileMenuOpen={mobileMenuOpen} />
+      <DashboardHeader
+        setmobileMenuOpen={setMobileMenuOpen}
+        mobileMenuOpen={mobileMenuOpen}
+      />
       <div className="flex h-[calc(100vh-64px)]">
         {/* Desktop Sidebar */}
         <div className="hidden md:block md:w-64">
           <Sidebar />
         </div>
-
-        
 
         {/* Mobile Sidebar */}
         {mobileMenuOpen && (
@@ -37,5 +41,5 @@ export default function DashboardLayout({
         </main>
       </div>
     </>
-  )
+  );
 }

@@ -64,7 +64,9 @@ export default function LoginPage() {
   useEffect(() => {
     if (data) {
       // Successful login
-      router.push("/dashboard");
+      console.log(data.role);
+
+      // router.push("/dashboard");
     }
   }, [data]);
 

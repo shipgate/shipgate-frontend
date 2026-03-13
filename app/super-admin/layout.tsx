@@ -6,6 +6,7 @@ import { useState } from "react"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { Menu, X } from "lucide-react"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { useProtectedRoute } from "@/hooks/useProtectedRoute"
 
 export default function SuperAdminLayout({
   children,
@@ -14,6 +15,8 @@ export default function SuperAdminLayout({
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+    const isAuthenticated = useProtectedRoute("Customer");
+     if (!isAuthenticated) return null;
   return (
     <>
       <DashboardHeader mobileMenuOpen={mobileMenuOpen} setmobileMenuOpen={setMobileMenuOpen} />
