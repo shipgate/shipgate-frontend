@@ -1,28 +1,22 @@
 "use client"
 
-import type { ReactNode } from "react"
+import type React from "react"
+import { Sidebar } from "@/components/dashboard/sidebar"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { useState } from "react"
 
-import { Sidebar } from "@/components/dashboard/sidebar"
-import { Menu, X } from "lucide-react"
-import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { useProtectedRoute } from "@/hooks/useProtectedRoute"
-
-export default function SuperAdminLayout({
+export default function AdminLayout({
   children,
 }: {
-  children: ReactNode
+  children: React.ReactNode
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-
-    const isAuthenticated = useProtectedRoute("SuperAdmin");
-     if (!isAuthenticated) return null;
   return (
     <>
       <DashboardHeader mobileMenuOpen={mobileMenuOpen} setmobileMenuOpen={setMobileMenuOpen} />
       <div className="flex h-[calc(100vh-64px)]">
         <div className="hidden md:block md:w-64">
-          <Sidebar userRole="super-admin" />
+          <Sidebar userRole="admin" />
         </div>
 
         
@@ -30,7 +24,7 @@ export default function SuperAdminLayout({
         {/* Mobile Sidebar */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 top-16 z-30 md:hidden">
-            <Sidebar userRole="super-admin" />
+            <Sidebar userRole="admin" />
           </div>
         )}
 

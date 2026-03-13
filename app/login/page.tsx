@@ -66,6 +66,10 @@ export default function LoginPage() {
       // Successful login
       console.log(data.role);
 
+      // SuperAdmin
+      // Customer
+      // 
+
       // router.push("/dashboard");
     }
   }, [data]);
