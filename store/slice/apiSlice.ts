@@ -207,7 +207,7 @@ export const apiSlice = createApi({
     createShipment: builder.mutation<
       unknown,
       {
-        shippingTypeEnum: 1 | 2;
+        shippingTypeEnum: "Air" | "Sea";
         senderName: string;
         senderPhone: string;
         senderCountry: string;
@@ -220,6 +220,16 @@ export const apiSlice = createApi({
         recipientState: string;
         recipientCity: string;
         recipientEmail: string;
+        item: {
+          itemDescription: string;
+          quantity: number;
+          weightKg: number;
+          lengthCm: number;
+          widthCm: number;
+          heightCm: number;
+          cbmVolume: number;
+          containerSize: string;
+        };
       }
     >({
       query: (formData) => ({
@@ -527,6 +537,121 @@ export const apiSlice = createApi({
         }
       },
     }),
+    // admin
+    // useActiveSuperAdminUsersQuery
+    activeSuperAdminUsers: builder.query({
+      query: () => ({
+        url: `/super-admin/all-users`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    // useGetAllCourierUsersQuery
+    getAllCourierUsers: builder.query({
+      query: () => ({
+        url: `/super-admin/all-users/Courier`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    // useGetDashboardDataQuery
+    getDashboardData: builder.query({
+      query: () => ({
+        url: `/super-admin/dashboard`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
+    // super admin
+    // useCreateCourierMutation
+    createCourier: builder.mutation<
+      unknown,
+      {
+        fullName: string;
+        email: string;
+        phoneNumber: string;
+        assignedCity: string;
+      }
+    >({
+      query: (formData) => ({
+        url: `/super-admin/manage-couriers`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Courier created successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    createAdmin: builder.mutation<
+      unknown,
+      { fullName: string; email: string; role: string }
+    >({
+      query: (formData) => ({
+        url: `/super-admin/manage-admins`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Admin created successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    // useDeleteAdminMutation
+    deleteAdmin: builder.mutation<unknown, { id: string }>({
+      query: (formData) => ({
+        url: `/api/super-admin/delete/${formData.id}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Admin deleted successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
   }),
 });
 
@@ -572,4 +697,12 @@ export const {
   useSignupResendOtpMutation,
   useLoginOtpMutation,
   useLoginResendOtpMutation,
+
+  // super admin
+  useActiveSuperAdminUsersQuery,
+  useGetAllCourierUsersQuery,
+  useGetDashboardDataQuery,
+  useCreateAdminMutation,
+  useDeleteAdminMutation,
+  useCreateCourierMutation,
 } = apiSlice;

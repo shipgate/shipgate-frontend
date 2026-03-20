@@ -19,6 +19,8 @@ import {
 } from "@/store/slice/apiSlice";
 
 export default function AddShipmentPage() {
+  const [cbm, setCbm] = useState(0);
+  const [containerType, setContainerType] = useState("");
   const { data: shippingOptions } = useGetShippingMethodQuery({});
 
   const [createShipment, { isLoading }] = useCreateShipmentMutation();
@@ -64,11 +66,15 @@ export default function AddShipmentPage() {
     width: "",
     height: "",
     senderState: "",
+    senderCity: "",
     senderCountry: "China",
-    senderAddress: "",
+    senderEmail: "",
     recipientState: "",
+    recipientCity: "",
     recipientCountry: "Nigeria",
-    recipientAddress: "",
+    recipientEmail: "",
+    quantity: "",
+    cbmVolume: "",
   });
 
   const [error, setError] = useState("");
@@ -90,38 +96,40 @@ export default function AddShipmentPage() {
     if (
       !formData.senderName ||
       !formData.senderPhone ||
-      !formData.recipientName ||
-      !formData.weight
+      !formData.recipientName
     ) {
       setError("Please fill in all required fields");
       return;
     }
 
     await createShipment({
-      shippingTypeEnum: formData.shippingType === "air" ? 1 : 2,
-      // originCity: "Lagos",
-      // originCountry: "Nigeria",
-      // destinationCity: "Abuja",
-      // destinationCountry: "Nigeria",
-      senderEmail: "",
-      senderCity: "",
-      senderName: formData.senderName,
-      senderPhone: formData.senderPhone,
-      recipientName: formData.recipientName,
-      recipientPhone: formData.recipientPhone,
-      // itemDescription: formData.itemDescription,
-      senderState: formData.senderState,
-      senderCountry: formData.senderCountry,
-      // senderAddress: formData.senderAddress,
-      recipientEmail: "",
-      recipientCity: "",
-      recipientState: formData.recipientState,
-      recipientCountry: formData.recipientCountry,
-      // recipientAddress: formData.recipientAddress,
-      // weightKg: Number(formData.weight),
-      // lengthCm: formData.length ? Number(formData.length) : 0,
-      // widthCm: formData.width ? Number(formData.width) : 0,
-      // heightCm: formData.height ? Number(formData.height) : 0,
+      shippingTypeEnum: formData.shippingType.includes("sea") ? "Sea" : "Air",
+      senderName: formData?.senderName,
+      senderPhone: formData?.senderPhone,
+      senderCountry: formData?.senderCountry,
+      senderState: formData?.senderState,
+      senderCity: formData?.senderCity,
+      senderEmail: formData?.senderEmail,
+      recipientName: formData?.recipientName,
+      recipientPhone: formData?.recipientPhone,
+      recipientCountry: formData?.recipientCountry,
+      recipientState: formData?.recipientState,
+      recipientCity: formData?.recipientCity,
+      recipientEmail: formData?.recipientEmail,
+      item: {
+        itemDescription: formData?.itemDescription,
+        quantity: Number(formData?.quantity),
+        weightKg: Number(formData?.weight),
+        lengthCm: Number(formData?.length),
+        widthCm: Number(formData?.width),
+        heightCm: Number(formData?.height),
+        cbmVolume: Number(cbm),
+        containerSize: formData?.shippingType.includes("40ft")
+          ? "FortyFt"
+          : formData?.shippingType.includes("20ft")
+            ? "TwentyFt"
+            : "",
+      },
     })
       .then(() => {
         alert("Shipment created successfully!");
@@ -138,11 +146,15 @@ export default function AddShipmentPage() {
           width: "",
           height: "",
           senderState: "",
-          senderAddress: "",
           senderCountry: "China",
           recipientState: "",
-          recipientAddress: "",
           recipientCountry: "Nigeria",
+          cbmVolume: "",
+          quantity: "",
+          recipientCity: "",
+          recipientEmail: "",
+          senderCity: "",
+          senderEmail: "",
         });
       })
       .catch((err) => {
@@ -178,9 +190,10 @@ export default function AddShipmentPage() {
               className="w-full p-3 border border-border rounded-lg bg-background"
             >
               {formattedOptions?.map(
-                (item: { value: string; label: string }) => (
-                  <option value={item?.value}>{item?.label}</option>
-                ),
+                (item: { value: string; label: string }) => {
+                  console.log(formData?.shippingType);
+                  return <option value={item?.value}>{item?.label}</option>;
+                },
               )}
             </select>
           </CardContent>
@@ -217,19 +230,20 @@ export default function AddShipmentPage() {
                 />
               </div>
 
-              <div className="col-span-2">
+              <div>
                 <label className="block text-sm font-medium text-foreground mb-2 ">
-                  Sender Address
+                  Sender Email Address
                 </label>
                 <Input
                   type="text"
-                  name="senderAddress"
-                  value={formData.senderAddress}
+                  name="senderEmail"
+                  value={formData.senderEmail}
                   onChange={handleChange}
-                  placeholder="Enter sender's full address"
+                  placeholder="Enter email address"
                   required
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Sender Country
@@ -244,6 +258,21 @@ export default function AddShipmentPage() {
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2 ">
+                  Sender City
+                </label>
+                <Input
+                  type="text"
+                  name="senderCity"
+                  value={formData.senderCity}
+                  onChange={handleChange}
+                  placeholder="Enter sender city"
+                  required
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Sender State/Province
@@ -291,19 +320,20 @@ export default function AddShipmentPage() {
                 />
               </div>
 
-              <div className="col-span-2">
+              <div>
                 <label className="block text-sm font-medium text-foreground mb-2 ">
-                  Recipient Address
+                  Sender Email Address
                 </label>
                 <Input
                   type="text"
-                  name="recipientAddress"
-                  value={formData.recipientAddress}
+                  name="recipientEmail"
+                  value={formData.recipientEmail}
                   onChange={handleChange}
-                  placeholder="Enter recipient's full address"
+                  placeholder="Enter email address"
                   required
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Recipient Country
@@ -320,14 +350,27 @@ export default function AddShipmentPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Recipient State
+                  Recipient City
+                </label>
+                <Input
+                  type="text"
+                  name="recipientCity"
+                  value={formData.recipientCity}
+                  onChange={handleChange}
+                  placeholder=" Recipient city e.g Ikeja"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Recipient State/Province
                 </label>
                 <Input
                   type="text"
                   name="recipientState"
                   value={formData.recipientState}
                   onChange={handleChange}
-                  placeholder="Recipient State e.g Lagos"
+                  placeholder="Recipient State/Province e.g Lagos"
                 />
               </div>
             </div>
@@ -355,65 +398,88 @@ export default function AddShipmentPage() {
               />
             </div>
 
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Weight (kg) *
-                </label>
-                <Input
-                  type="number"
-                  name="weight"
-                  placeholder="Enter weight"
-                  value={formData.weight}
-                  onChange={handleChange}
-                />
-              </div>
+            {formData.shippingType === "air" && (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Weight (kg) *
+                  </label>
+                  <Input
+                    type="number"
+                    name="weight"
+                    placeholder="Enter weight"
+                    value={formData.weight}
+                    onChange={handleChange}
+                  />
+                </div>
 
-              {/* Dimensions for volumetric weight */}
-              <div>
-                <p className="text-sm font-medium text-foreground mb-3">
-                  Dimensions (Optional - for volumetric weight)
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-foreground">
-                      Length (cm)
-                    </label>
-                    <Input
-                      type="number"
-                      name="length"
-                      placeholder="L"
-                      value={formData.length}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-foreground">
-                      Width (cm)
-                    </label>
-                    <Input
-                      type="number"
-                      name="width"
-                      placeholder="W"
-                      value={formData.width}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-foreground">
-                      Height (cm)
-                    </label>
-                    <Input
-                      type="number"
-                      name="height"
-                      placeholder="H"
-                      value={formData.height}
-                      onChange={handleChange}
-                    />
+                {/* Dimensions for volumetric weight */}
+                <div>
+                  <p className="text-sm font-medium text-foreground mb-3">
+                    Dimensions (Optional - for volumetric weight)
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-foreground">
+                        Length (cm)
+                      </label>
+                      <Input
+                        type="number"
+                        name="length"
+                        placeholder="L"
+                        value={formData.length}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-foreground">
+                        Width (cm)
+                      </label>
+                      <Input
+                        type="number"
+                        name="width"
+                        placeholder="W"
+                        value={formData.width}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-foreground">
+                        Height (cm)
+                      </label>
+                      <Input
+                        type="number"
+                        name="height"
+                        placeholder="H"
+                        value={formData.height}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
+              </>
+            )}
+
+            {formData.shippingType.includes("cbm") && (
+              <Card>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground mb-2">
+                      CBM volume
+                    </label>
+                    <Input
+                      type="number"
+                      placeholder="Enter CBM (cubic meters)"
+                      value={cbm || ""}
+                      onChange={(e) =>
+                        setCbm(Number.parseFloat(e.target.value) || 0)
+                      }
+                      className="h-10"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </CardContent>
         </Card>
 

@@ -1,41 +1,98 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, Mail, Phone, MapPin } from "lucide-react"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Trash2, Plus, Mail, Phone, MapPin } from "lucide-react";
+import {
+  useCreateCourierMutation,
+  useGetAllCourierUsersQuery,
+} from "@/store/slice/apiSlice";
 
 export default function ManageCouriers() {
-  const [couriers, setCouriers] = useState([
-    { id: 1, name: "Chukwu Okafor", email: "chukwu@example.com", phone: "08012345678", city: "Lagos", available: true },
-    { id: 2, name: "Amara Eze", email: "amara@example.com", phone: "08087654321", city: "Abuja", available: true },
-    { id: 3, name: "Tunde Adeyemi", email: "tunde@example.com", phone: "08098765432", city: "Lagos", available: false },
-  ])
+  const { data, isLoading } = useGetAllCourierUsersQuery({});
+  const [createCourier, { data: courierData, isLoading: isCreating }] =
+    useCreateCourierMutation();
 
-  const [showForm, setShowForm] = useState(false)
-  const [newCourier, setNewCourier] = useState({ name: "", email: "", phone: "", city: "Lagos" })
+  const [couriers, setCouriers] = useState([
+    {
+      id: 1,
+      name: "Chukwu Okafor",
+      email: "chukwu@example.com",
+      phone: "08012345678",
+      city: "Lagos",
+      available: true,
+    },
+    {
+      id: 2,
+      name: "Amara Eze",
+      email: "amara@example.com",
+      phone: "08087654321",
+      city: "Abuja",
+      available: true,
+    },
+    {
+      id: 3,
+      name: "Tunde Adeyemi",
+      email: "tunde@example.com",
+      phone: "08098765432",
+      city: "Lagos",
+      available: false,
+    },
+  ]);
+
+  const [showForm, setShowForm] = useState(false);
+  const [newCourier, setNewCourier] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    city: "Lagos",
+  });
+
+  useEffect(() => {
+    if (courierData) {
+      setNewCourier({ name: "", email: "", phone: "", city: "Lagos" });
+      setShowForm(false);
+    }
+  }, [courierData]);
 
   const handleAddCourier = () => {
     if (newCourier.name && newCourier.email && newCourier.phone) {
-      setCouriers([...couriers, { id: couriers.length + 1, ...newCourier, available: true }])
-      setNewCourier({ name: "", email: "", phone: "", city: "Lagos" })
-      setShowForm(false)
+      createCourier({
+        assignedCity: newCourier.city,
+        email: newCourier.email,
+        fullName: newCourier.name,
+        phoneNumber: newCourier.phone,
+      });
     }
-  }
+  };
 
   const handleDeleteCourier = (id: number) => {
-    setCouriers(couriers.filter((courier) => courier.id !== id))
-  }
+    setCouriers(couriers.filter((courier) => courier.id !== id));
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Manage Couriers</h1>
-          <p className="text-foreground/60">Add, view, and manage delivery couriers</p>
+          <h1 className="text-3xl font-bold text-foreground">
+            Manage Couriers
+          </h1>
+          <p className="text-foreground/60">
+            Add, view, and manage delivery couriers
+          </p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90" onClick={() => setShowForm(!showForm)}>
+        <Button
+          className="bg-primary hover:bg-primary/90"
+          onClick={() => setShowForm(!showForm)}
+        >
           <Plus className="w-4 h-4 mr-2" /> Add Courier
         </Button>
       </div>
@@ -49,40 +106,56 @@ export default function ManageCouriers() {
           <CardContent>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-foreground">Full Name</label>
+                <label className="text-sm font-medium text-foreground">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   placeholder="Enter courier name"
                   value={newCourier.name}
-                  onChange={(e) => setNewCourier({ ...newCourier, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewCourier({ ...newCourier, name: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Email</label>
+                <label className="text-sm font-medium text-foreground">
+                  Email
+                </label>
                 <input
                   type="email"
                   placeholder="Enter email"
                   value={newCourier.email}
-                  onChange={(e) => setNewCourier({ ...newCourier, email: e.target.value })}
+                  onChange={(e) =>
+                    setNewCourier({ ...newCourier, email: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Phone Number</label>
+                <label className="text-sm font-medium text-foreground">
+                  Phone Number
+                </label>
                 <input
                   type="tel"
                   placeholder="Enter phone number"
                   value={newCourier.phone}
-                  onChange={(e) => setNewCourier({ ...newCourier, phone: e.target.value })}
+                  onChange={(e) =>
+                    setNewCourier({ ...newCourier, phone: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Assigned City</label>
+                <label className="text-sm font-medium text-foreground">
+                  Assigned City
+                </label>
                 <select
                   value={newCourier.city}
-                  onChange={(e) => setNewCourier({ ...newCourier, city: e.target.value })}
+                  onChange={(e) =>
+                    setNewCourier({ ...newCourier, city: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option>Lagos</option>
@@ -95,8 +168,12 @@ export default function ManageCouriers() {
                 <Button variant="outline" onClick={() => setShowForm(false)}>
                   Cancel
                 </Button>
-                <Button className="bg-primary hover:bg-primary/90" onClick={handleAddCourier}>
-                  Register Courier
+                <Button
+                  className="bg-primary hover:bg-primary/90"
+                  onClick={handleAddCourier}
+                  disabled={isCreating}
+                >
+                {isCreating ? "creating new courier" :"  Register Courier"}
                 </Button>
               </div>
             </div>
@@ -107,8 +184,10 @@ export default function ManageCouriers() {
       {/* Couriers Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Couriers ({couriers.length})</CardTitle>
-          <CardDescription>Active and inactive delivery couriers</CardDescription>
+          <CardTitle>Couriers ({data?.length})</CardTitle>
+          <CardDescription>
+            Active and inactive delivery couriers
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -119,14 +198,21 @@ export default function ManageCouriers() {
                   <th className="text-left py-3 px-4 font-semibold">Email</th>
                   <th className="text-left py-3 px-4 font-semibold">Phone</th>
                   <th className="text-left py-3 px-4 font-semibold">City</th>
-                  <th className="text-left py-3 px-4 font-semibold">Availability</th>
+                  <th className="text-left py-3 px-4 font-semibold">
+                    Availability
+                  </th>
                   <th className="text-left py-3 px-4 font-semibold">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {couriers.map((courier) => (
-                  <tr key={courier.id} className="border-b border-border hover:bg-muted/50">
-                    <td className="py-3 px-4 font-semibold">{courier.name}</td>
+                {data?.map((courier: any, index: number) => (
+                  <tr
+                    key={index}
+                    className="border-b border-border hover:bg-muted/50"
+                  >
+                    <td className="py-3 px-4 font-semibold">
+                      {courier.fullName}
+                    </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2 text-foreground/70">
                         <Mail className="w-4 h-4" />
@@ -146,8 +232,10 @@ export default function ManageCouriers() {
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <Badge variant={courier.available ? "default" : "secondary"}>
-                        {courier.available ? "Available" : "On Delivery"}
+                      <Badge
+                        variant={courier.isActive ? "default" : "secondary"}
+                      >
+                        {courier.isActive ? "Available" : "On Delivery"}
                       </Badge>
                     </td>
                     <td className="py-3 px-4">
@@ -168,5 +256,5 @@ export default function ManageCouriers() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

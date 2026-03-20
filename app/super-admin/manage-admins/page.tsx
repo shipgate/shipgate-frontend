@@ -1,44 +1,73 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Trash2, Plus, Mail } from "lucide-react"
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Trash2, Plus, Mail } from "lucide-react";
+import {
+  useActiveSuperAdminUsersQuery,
+  useCreateAdminMutation,
+  useDeleteAdminMutation,
+} from "@/store/slice/apiSlice";
 
 export default function ManageAdmins() {
-  const [admins, setAdmins] = useState([
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "active" },
-    { id: 2, name: "Sarah Williams", email: "sarah@example.com", role: "Operations Staff", status: "active" },
-    { id: 3, name: "Michael Brown", email: "michael@example.com", role: "Admin", status: "active" },
-  ])
+  const [createAdmin, { isLoading: isCreating, data: newAdminData }] =
+    useCreateAdminMutation();
+  const [deleteAdmin, { isLoading: isDeleting }] = useDeleteAdminMutation();
+  const { data, isLoading, refetch } = useActiveSuperAdminUsersQuery({});
 
-  const [showForm, setShowForm] = useState(false)
-  const [newAdmin, setNewAdmin] = useState({ name: "", email: "", role: "Admin" })
+  console.log({ data, isLoading });
+
+  const [showForm, setShowForm] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({
+    name: "",
+    email: "",
+    role: "Admin",
+  });
+
+  useEffect(() => {
+    if (newAdminData) {
+      setShowForm(false);
+      refetch();
+    }
+  }, [newAdminData]);
 
   const handleAddAdmin = () => {
     if (newAdmin.name && newAdmin.email) {
-      setAdmins([
-        ...admins,
-        { id: admins.length + 1, name: newAdmin.name, email: newAdmin.email, role: newAdmin.role, status: "active" },
-      ])
-      setNewAdmin({ name: "", email: "", role: "Admin" })
-      setShowForm(false)
+      createAdmin({
+        email: newAdmin.email,
+        fullName: newAdmin.name,
+        role: newAdmin.role,
+      });
     }
-  }
+  };
 
-  const handleDeleteAdmin = (id: number) => {
-    setAdmins(admins.filter((admin) => admin.id !== id))
-  }
+  const handleDeleteAdmin = (id: string) => {
+    deleteAdmin({ id: id });
+  };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Manage Admins & Staff</h1>
-          <p className="text-foreground/60">Add and manage admin and operations staff accounts</p>
+          <h1 className="text-3xl font-bold text-foreground">
+            Manage Admins & Staff
+          </h1>
+          <p className="text-foreground/60">
+            Add and manage admin and operations staff accounts
+          </p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90" onClick={() => setShowForm(!showForm)}>
+        <Button
+          className="bg-primary hover:bg-primary/90"
+          onClick={() => setShowForm(!showForm)}
+        >
           <Plus className="w-4 h-4 mr-2" /> Add Admin
         </Button>
       </div>
@@ -52,30 +81,42 @@ export default function ManageAdmins() {
           <CardContent>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-foreground">Full Name</label>
+                <label className="text-sm font-medium text-foreground">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   placeholder="Enter full name"
                   value={newAdmin.name}
-                  onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewAdmin({ ...newAdmin, name: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Email</label>
+                <label className="text-sm font-medium text-foreground">
+                  Email
+                </label>
                 <input
                   type="email"
                   placeholder="Enter email"
                   value={newAdmin.email}
-                  onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                  onChange={(e) =>
+                    setNewAdmin({ ...newAdmin, email: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground">Role</label>
+                <label className="text-sm font-medium text-foreground">
+                  Role
+                </label>
                 <select
                   value={newAdmin.role}
-                  onChange={(e) => setNewAdmin({ ...newAdmin, role: e.target.value })}
+                  onChange={(e) =>
+                    setNewAdmin({ ...newAdmin, role: e.target.value })
+                  }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <option>Admin</option>
@@ -86,8 +127,12 @@ export default function ManageAdmins() {
                 <Button variant="outline" onClick={() => setShowForm(false)}>
                   Cancel
                 </Button>
-                <Button className="bg-primary hover:bg-primary/90" onClick={handleAddAdmin}>
-                  Create Admin
+                <Button
+                  className="bg-primary hover:bg-primary/90"
+                  disabled={isCreating}
+                  onClick={handleAddAdmin}
+                >
+                  {isCreating ? "..creating admin" : " Create Admin"}
                 </Button>
               </div>
             </div>
@@ -95,11 +140,14 @@ export default function ManageAdmins() {
         </Card>
       )}
 
+      {isDeleting && <div>....deleting admin</div>}
       {/* Admins Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Admins & Staff ({admins.length})</CardTitle>
-          <CardDescription>All administrators and operations staff</CardDescription>
+          <CardTitle>Admins & Staff ({data?.length})</CardTitle>
+          <CardDescription>
+            All administrators and operations staff
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -114,9 +162,14 @@ export default function ManageAdmins() {
                 </tr>
               </thead>
               <tbody>
-                {admins.map((admin) => (
-                  <tr key={admin.id} className="border-b border-border hover:bg-muted/50">
-                    <td className="py-3 px-4 font-semibold">{admin.name}</td>
+                {data?.map((admin: any) => (
+                  <tr
+                    key={admin.id}
+                    className="border-b border-border hover:bg-muted/50"
+                  >
+                    <td className="py-3 px-4 font-semibold capitalize">
+                      {admin.fullName}
+                    </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2 text-foreground/70">
                         <Mail className="w-4 h-4" />
@@ -125,7 +178,9 @@ export default function ManageAdmins() {
                     </td>
                     <td className="py-3 px-4">{admin.role}</td>
                     <td className="py-3 px-4">
-                      <Badge variant="default">{admin.status}</Badge>
+                      <Badge variant="default">
+                        {admin.isActive ? "Active" : "Pending"}
+                      </Badge>
                     </td>
                     <td className="py-3 px-4">
                       <Button
@@ -145,5 +200,5 @@ export default function ManageAdmins() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
