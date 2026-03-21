@@ -13,10 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, Plus, Mail, Phone, MapPin } from "lucide-react";
 import {
   useCreateCourierMutation,
+  useDeleteAdminMutation,
   useGetAllCourierUsersQuery,
 } from "@/store/slice/apiSlice";
 
 export default function ManageCouriers() {
+  const [deleteCourier, { isLoading: isDeleting }] = useDeleteAdminMutation();
+
   const { data, isLoading } = useGetAllCourierUsersQuery({});
   const [createCourier, { data: courierData, isLoading: isCreating }] =
     useCreateCourierMutation();
@@ -74,8 +77,8 @@ export default function ManageCouriers() {
     }
   };
 
-  const handleDeleteCourier = (id: number) => {
-    setCouriers(couriers.filter((courier) => courier.id !== id));
+  const handleDeleteCourier = (id: string) => {
+    deleteCourier({ id });
   };
 
   return (
@@ -96,6 +99,9 @@ export default function ManageCouriers() {
           <Plus className="w-4 h-4 mr-2" /> Add Courier
         </Button>
       </div>
+
+      {isLoading && <div>....loading courier</div>}
+      {isDeleting && <div>....deleting courier</div>}
 
       {/* Add Courier Form */}
       {showForm && (
@@ -173,7 +179,7 @@ export default function ManageCouriers() {
                   onClick={handleAddCourier}
                   disabled={isCreating}
                 >
-                {isCreating ? "creating new courier" :"  Register Courier"}
+                  {isCreating ? "creating new courier" : "  Register Courier"}
                 </Button>
               </div>
             </div>

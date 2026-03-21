@@ -632,10 +632,11 @@ export const apiSlice = createApi({
         }
       },
     }),
+
     // useDeleteAdminMutation
     deleteAdmin: builder.mutation<unknown, { id: string }>({
       query: (formData) => ({
-        url: `/api/super-admin/delete/${formData.id}`,
+        url: `/super-admin/delete/${formData.id}`,
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -645,7 +646,84 @@ export const apiSlice = createApi({
       async onQueryStarted(args, { queryFulfilled }) {
         try {
           await queryFulfilled;
-          successToast("Admin deleted successfully");
+          successToast("Deleted successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
+    // useGetAdminShipmentQuery
+    getAdminShipment: builder.query({
+      queryFn: async () => {
+        try {
+          setTimeout(() => {}, 1000);
+          return {
+            data: [
+              {
+                id: "SHP-2024-001",
+                customer: "John Doe",
+                type: "Air",
+                status: "in_transit",
+                location: "In Flight to Nigeria",
+                amount: "$1,080",
+                arrival: "Lagos Warehouse",
+              },
+              {
+                id: "SHP-2024-002",
+                customer: "Jane Smith",
+                type: "Sea 20ft",
+                status: "arrived",
+                location: "Lagos Warehouse",
+                amount: "$5,400",
+                arrival: "Lagos Warehouse",
+              },
+              {
+                id: "SHP-2024-003",
+                customer: "Ahmed Hassan",
+                type: "Air",
+                status: "pending",
+                location: "China Warehouse",
+                amount: "$540",
+                arrival: "Lagos Warehouse",
+              },
+              {
+                id: "SHP-2024-004",
+                customer: "Mary Johnson",
+                type: "Sea 40ft",
+                status: "arrived",
+                location: "Lagos Warehouse",
+                amount: "$7,200",
+                arrival: "Lagos Warehouse",
+              },
+            ],
+          };
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected error");
+          return { error: errorM };
+        }
+      },
+    }),
+
+    // useUpdateShipmentPriceMutation
+    updateShipmentPrice: builder.mutation<
+      unknown,
+      { id: string; price: number }
+    >({
+      query: (formData) => ({
+        url: `/super-admin/shipment/update-price/${formData.id}`,
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Price updated successfully");
         } catch (error) {
           const errorM = error as CustomError;
           errorToast(errorM.error?.data?.error || "Unexpected errror");
@@ -705,4 +783,6 @@ export const {
   useCreateAdminMutation,
   useDeleteAdminMutation,
   useCreateCourierMutation,
+  useGetAdminShipmentQuery,
+  useUpdateShipmentPriceMutation,
 } = apiSlice;

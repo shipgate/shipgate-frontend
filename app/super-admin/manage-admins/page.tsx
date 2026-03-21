@@ -23,8 +23,6 @@ export default function ManageAdmins() {
   const [deleteAdmin, { isLoading: isDeleting }] = useDeleteAdminMutation();
   const { data, isLoading, refetch } = useActiveSuperAdminUsersQuery({});
 
-  console.log({ data, isLoading });
-
   const [showForm, setShowForm] = useState(false);
   const [newAdmin, setNewAdmin] = useState({
     name: "",
@@ -140,6 +138,7 @@ export default function ManageAdmins() {
         </Card>
       )}
 
+      {isLoading && <div>....loading admin</div>}
       {isDeleting && <div>....deleting admin</div>}
       {/* Admins Table */}
       <Card>
