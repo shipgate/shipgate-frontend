@@ -656,53 +656,15 @@ export const apiSlice = createApi({
 
     // useGetAdminShipmentQuery
     getAdminShipment: builder.query({
-      queryFn: async () => {
+      query: () => ({
+        url: `/shipments`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
         try {
-          setTimeout(() => {}, 1000);
-          return {
-            data: [
-              {
-                id: "SHP-2024-001",
-                customer: "John Doe",
-                type: "Air",
-                status: "in_transit",
-                location: "In Flight to Nigeria",
-                amount: "$1,080",
-                arrival: "Lagos Warehouse",
-              },
-              {
-                id: "SHP-2024-002",
-                customer: "Jane Smith",
-                type: "Sea 20ft",
-                status: "arrived",
-                location: "Lagos Warehouse",
-                amount: "$5,400",
-                arrival: "Lagos Warehouse",
-              },
-              {
-                id: "SHP-2024-003",
-                customer: "Ahmed Hassan",
-                type: "Air",
-                status: "pending",
-                location: "China Warehouse",
-                amount: "$540",
-                arrival: "Lagos Warehouse",
-              },
-              {
-                id: "SHP-2024-004",
-                customer: "Mary Johnson",
-                type: "Sea 40ft",
-                status: "arrived",
-                location: "Lagos Warehouse",
-                amount: "$7,200",
-                arrival: "Lagos Warehouse",
-              },
-            ],
-          };
+          await queryFulfilled;
         } catch (error) {
           const errorM = error as CustomError;
-          errorToast(errorM.error?.data?.error || "Unexpected error");
-          return { error: errorM };
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
         }
       },
     }),
@@ -710,20 +672,35 @@ export const apiSlice = createApi({
     // useUpdateShipmentPriceMutation
     updateShipmentPrice: builder.mutation<
       unknown,
-      { id: string; price: number }
+      { trackingNumber: string; cost: number }
     >({
       query: (formData) => ({
-        url: `/super-admin/shipment/update-price/${formData.id}`,
+        url: `/shipments/${formData?.trackingNumber}/set-cost`,
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: formData,
+        body: { cost: formData.cost },
       }),
       async onQueryStarted(args, { queryFulfilled }) {
         try {
           await queryFulfilled;
           successToast("Price updated successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
+    // useGetAdminDasbhoardDataQuery
+    getAdminDasbhoardData: builder.query({
+      query: () => ({
+        url: `/admin/dashboard`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
         } catch (error) {
           const errorM = error as CustomError;
           errorToast(errorM.error?.data?.error || "Unexpected errror");
@@ -785,4 +762,7 @@ export const {
   useCreateCourierMutation,
   useGetAdminShipmentQuery,
   useUpdateShipmentPriceMutation,
+
+  // admin
+  useGetAdminDasbhoardDataQuery,
 } = apiSlice;

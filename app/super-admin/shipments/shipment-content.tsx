@@ -17,8 +17,10 @@ import {
 } from "@/store/slice/apiSlice";
 
 export default function ShipmentsContent() {
-  const [onShipmentPriceUpdate, { data: shipmentResult }] =
-    useUpdateShipmentPriceMutation();
+  const [
+    onShipmentPriceUpdate,
+    { data: shipmentResult, isLoading: isLoadingPriceUpdate },
+  ] = useUpdateShipmentPriceMutation();
   const { data, isLoading, refetch } = useGetAdminShipmentQuery({});
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +31,7 @@ export default function ShipmentsContent() {
   );
   const [assignedPrice, setAssignedPrice] = useState("");
 
-  const filteredShipments = data?.filter((shipment) => {
+  const filteredShipments = data?.data?.filter((shipment) => {
     const matchesSearch =
       shipment.id.includes(searchTerm.toUpperCase()) ||
       shipment.customer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -37,6 +39,8 @@ export default function ShipmentsContent() {
       filterStatus === "all" || shipment.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
+
+  console.log(data, filteredShipments);
 
   useEffect(() => {
     if (shipmentResult) {
@@ -52,8 +56,8 @@ export default function ShipmentsContent() {
         `[v0] Price assigned to ${shipmentToPriceId}: $${assignedPrice}`,
       );
       onShipmentPriceUpdate({
-        id: shipmentToPriceId,
-        price: Number(assignedPrice),
+        trackingNumber: shipmentToPriceId,
+        cost: Number(assignedPrice),
       });
     }
   };
@@ -135,10 +139,10 @@ export default function ShipmentsContent() {
                     className="border-b border-border hover:bg-muted/50"
                   >
                     <td className="py-3 px-4 font-mono text-primary">
-                      {shipment.id}
+                      {shipment?.trackingNumber}
                     </td>
-                    <td className="py-3 px-4">{shipment.customer}</td>
-                    <td className="py-3 px-4">{shipment.type}</td>
+                    <td className="py-3 px-4">{shipment?.senderName}</td>
+                    <td className="py-3 px-4">{shipment?.shippingTypeEnum}</td>
                     <td className="py-3 px-4">
                       <Badge
                         variant={
@@ -154,31 +158,33 @@ export default function ShipmentsContent() {
                       {shipment.location}
                     </td>
                     <td className="py-3 px-4 font-semibold text-primary">
-                      {shipment.amount}
+                      {Number(shipment?.totalCost)?.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 space-x-1">
-                      {shipment.status === "arrived" && (
+                      {
+                        // shipment.status === "arrived" &&
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => {
-                            setShipmentToPriceId(shipment.id);
+                            setShipmentToPriceId(shipment?.trackingNumber);
                             setShowPriceModal(true);
                           }}
                         >
                           Set Price
                         </Button>
-                      )}
-                      {shipment.type.includes("Air") &&
-                        shipment.status === "arrived" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCourierAssignment(shipment.id)}
-                          >
-                            <Check className="w-4 h-4 mr-1" /> Assign
-                          </Button>
-                        )}
+                      }
+                      {
+                        // shipment?.shippingTypeEnum?.toLowerCase()?.includes("air") &&
+                        //   shipment?.status === "arrived" &&
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCourierAssignment(shipment.id)}
+                        >
+                          <Check className="w-4 h-4 mr-1" /> Assign
+                        </Button>
+                      }
                     </td>
                   </tr>
                 ))}
@@ -221,8 +227,16 @@ export default function ShipmentsContent() {
                 <Button
                   className="bg-primary hover:bg-primary/90"
                   onClick={handlePriceAssignment}
+                  disabled={isLoadingPriceUpdate}
                 >
-                  <Check className="w-4 h-4 mr-2" /> Confirm
+                  {isLoadingPriceUpdate ? (
+                    "...loading"
+                  ) : (
+                    <>
+                      {" "}
+                      <Check className="w-4 h-4 mr-2" /> Confirm
+                    </>
+                  )}
                 </Button>
               </div>
             </CardContent>
