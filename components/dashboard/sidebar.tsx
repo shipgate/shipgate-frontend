@@ -39,6 +39,7 @@ const superAdminMenuItems = [
   // { icon: MapPin, label: "Shipping Config", href: "/super-admin/shipping-config" },
   // { icon: ShoppingCart, label: "Carriers", href: "/super-admin/carriers" },
   { icon: Package, label: "All Shipments", href: "/super-admin/shipments" },
+  { icon: MessageSquare, label: "Support Tickets", href: "/super-admin/support-tickets" },
   // { icon: BarChart3, label: "Reports", href: "/super-admin/reports" },
   // { icon: Settings, label: "System Settings", href: "/super-admin/settings" },
 ];
@@ -50,6 +51,7 @@ const adminMenuItems = [
   { icon: MapPin, label: "Status Updates", href: "/admin/status-updates" },
   { icon: Truck, label: "Assign to Couriers", href: "/admin/assign-couriers" },
   { icon: FileText, label: "Reports", href: "/admin/reports" },
+  { icon: MessageSquare, label: "Support Tickets", href: "/admin/support-tickets" },
   { icon: Settings, label: "Settings", href: "/admin/settings" },
 ];
 
