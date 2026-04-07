@@ -46,14 +46,14 @@ export default function AdminDashboard() {
       icon: TrendingUp,
       color: "bg-orange-100 text-orange-700",
     },
-    {
-      label: "Issues",
-      value: isLoading
-        ? "..."
-        : (Number(data?.total_issues)?.toLocaleString() ?? "0"),
-      icon: AlertCircle,
-      color: "bg-red-100 text-red-700",
-    },
+    // {
+    //   label: "Issues",
+    //   value: isLoading
+    //     ? "..."
+    //     : (Number(data?.total_issues)?.toLocaleString() ?? "0"),
+    //   icon: AlertCircle,
+    //   color: "bg-red-100 text-red-700",
+    // },
   ];
 
   return (
@@ -122,10 +122,10 @@ export default function AdminDashboard() {
                     className="border-b border-border hover:bg-muted/50"
                   >
                     <td className="py-3 px-4 font-mono text-primary">
-                      {shipment.trackingNumber}
+                      {shipment?.trackingNumber}
                     </td>
-                    <td className="py-3 px-4">{shipment.senderName}</td>
-                    <td className="py-3 px-4">{shipment.shippingTypeEnum}</td>
+                    <td className="py-3 px-4">{shipment?.senderName}</td>
+                    <td className="py-3 px-4">{shipment?.shippingTypeEnum}</td>
                     <td className="py-3 px-4">
                       <Badge
                         variant={

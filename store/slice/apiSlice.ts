@@ -610,6 +610,8 @@ export const apiSlice = createApi({
         }
       },
     }),
+
+    // useCreateAdminMutation
     createAdmin: builder.mutation<
       unknown,
       { fullName: string; email: string; role: string }
@@ -641,7 +643,6 @@ export const apiSlice = createApi({
         headers: {
           "Content-Type": "application/json",
         },
-        body: formData,
       }),
       async onQueryStarted(args, { queryFulfilled }) {
         try {
@@ -693,6 +694,54 @@ export const apiSlice = createApi({
       },
     }),
 
+    // useUpdateShipmentStatusMutation
+    updateShipmentStatus: builder.mutation<
+      unknown,
+      { trackingNumber: string; status: string }
+    >({
+      query: (formData) => ({
+        url: `/shipments/${formData?.trackingNumber}/set-status`,
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: { status: formData.status },
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Status updated successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
+    // useUpdateAssignCourierMutation
+    updateAssignCourier: builder.mutation<
+      unknown,
+      { trackingNumber: string; courer_id: string }
+    >({
+      query: (formData) => ({
+        url: `/shipments/${formData?.trackingNumber}/set-cost`,
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: { courer_id: formData.courer_id },
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Price updated successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
     // useGetAdminDasbhoardDataQuery
     getAdminDasbhoardData: builder.query({
       query: () => ({
@@ -704,6 +753,310 @@ export const apiSlice = createApi({
         } catch (error) {
           const errorM = error as CustomError;
           errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
+    // useShipmentPendingUpdateQuery
+    shipmentPendingUpdate: builder.query({
+      // query: () => ({
+      //   url: `/admin/dashboard`,
+      // }),
+      // async onQueryStarted(args, { queryFulfilled }) {
+      //   try {
+      //     await queryFulfilled;
+      //   } catch (error) {
+      //     const errorM = error as CustomError;
+      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
+      //   }
+      // },
+      async queryFn() {
+        try {
+          // Simulate network delay
+          await new Promise((resolve) => setTimeout(resolve, 200));
+
+          const pendingUpdates = [
+            {
+              trackingId: "SHP-2024-001",
+              status: "In Airport Customs",
+              location: "Shanghai",
+              time: "2h ago",
+            },
+            {
+              trackingId: "SHP-2024-005",
+              status: "At Sea",
+              location: "Atlantic Ocean",
+              time: "6h ago",
+            },
+            {
+              trackingId: "SHP-2024-009",
+              status: "Port Departure",
+              location: "Hong Kong",
+              time: "12h ago",
+            },
+          ];
+
+          return { data: pendingUpdates };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Failed to fetch pending updates",
+            },
+          };
+        }
+      },
+    }),
+
+    // useGetShipmentByIdQuery
+    getShipmentById: builder.query({
+      // query: () => ({
+      //   url: `/admin/dashboard`,
+      // }),
+      // async onQueryStarted(args, { queryFulfilled }) {
+      //   try {
+      //     await queryFulfilled;
+      //   } catch (error) {
+      //     const errorM = error as CustomError;
+      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
+      //   }
+      // },
+      async queryFn(trackingId) {
+        try {
+          // Simulate network delay
+          await new Promise((resolve) => setTimeout(resolve, 200));
+
+          if (trackingId)
+            return {
+              data: {
+                id: "SHP-2024-001",
+                customer: "John Doe",
+                type: "air",
+                current: "in_airport_customs",
+                location: "Shanghai Pudong Airport",
+                weight: "150kg",
+                container: "",
+              },
+            };
+
+          return null;
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Failed to fetch pending updates",
+            },
+          };
+        }
+      },
+    }),
+
+    //useUpdateShipmentStatusMutation
+    // updateShipmentStatus: builder.mutation<
+    //   unknown,
+    //   { trackingId: string; status: string }
+    // >({
+    //   // queryFn for mock, swap for real endpoint later
+    //   async queryFn({ trackingId, status }) {
+    //     try {
+    //       await new Promise((resolve) => setTimeout(resolve, 200));
+
+    //       const pendingUpdates = [
+    //         {
+    //           trackingId: "SHP-2024-001",
+    //           status: "In Airport Customs",
+    //           location: "Shanghai",
+    //           time: "2h ago",
+    //         },
+    //         {
+    //           trackingId: "SHP-2024-005",
+    //           status: "At Sea",
+    //           location: "Atlantic Ocean",
+    //           time: "6h ago",
+    //         },
+    //         {
+    //           trackingId: "SHP-2024-009",
+    //           status: "Port Departure",
+    //           location: "Hong Kong",
+    //           time: "12h ago",
+    //         },
+    //       ];
+
+    //       const item = pendingUpdates.find((s) => s.trackingId === trackingId);
+
+    //       if (!item) {
+    //         return {
+    //           error: {
+    //             status: "CUSTOM_ERROR",
+    //             error: `Shipment ${trackingId} not found`,
+    //           },
+    //         };
+    //       }
+
+    //       const updated = {
+    //         ...item,
+    //         status,
+    //         time: "just now",
+    //       };
+
+    //       return { data: updated };
+    //     } catch (error) {
+    //       return {
+    //         error: {
+    //           status: "CUSTOM_ERROR",
+    //           error: "Failed to update shipment status",
+    //         },
+    //       };
+    //     }
+    //   },
+    // }),
+
+    // useGetCourierDashboardDataQuery
+    getCourierDashboardData: builder.query({
+      // query: () => ({
+      //   url: `/admin/dashboard`,
+      // }),
+      // async onQueryStarted(args, { queryFulfilled }) {
+      //   try {
+      //     await queryFulfilled;
+      //   } catch (error) {
+      //     const errorM = error as CustomError;
+      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
+      //   }
+      // },
+      async queryFn() {
+        try {
+          // Simulate network delay
+          await new Promise((resolve) => setTimeout(resolve, 200));
+
+          const pendingUpdates = {
+            today_deliveries: 8,
+            in_progress: 3,
+            completed: 5,
+            earnings: 12500,
+          };
+
+          return { data: pendingUpdates };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Failed to fetch pending updates",
+            },
+          };
+        }
+      },
+    }),
+
+    // useGetCourierDeliveriesQuery
+    getCourierDeliveries: builder.query({
+      // query: () => ({
+      //   url: `/admin/dashboard`,
+      // }),
+      // async onQueryStarted(args, { queryFulfilled }) {
+      //   try {
+      //     await queryFulfilled;
+      //   } catch (error) {
+      //     const errorM = error as CustomError;
+      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
+      //   }
+      // },
+      async queryFn() {
+        try {
+          // Simulate network delay
+          await new Promise((resolve) => setTimeout(resolve, 200));
+
+          const pendingUpdates = [
+            {
+              id: "SHP-2024-001",
+              customer: "John Doe",
+              address: "123 Lekki Road",
+              phone: "2348065418027",
+              status: "pending",
+            },
+            {
+              id: "SHP-2024-004",
+              customer: "Mary Johnson",
+              address: "456 Victoria Island",
+              phone: "2348065418027",
+              status: "pending",
+            },
+            {
+              id: "SHP-2024-007",
+              customer: "Ahmed Hassan",
+              address: "789 Ikoyi Drive",
+              phone: "2348065418027",
+              status: "in_progress",
+            },
+          ];
+          return { data: pendingUpdates };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Failed to fetch pending updates",
+            },
+          };
+        }
+      },
+    }),
+
+    //useUpdateCourierShipmentStatusMutation
+    updateCourierShipmentStatus: builder.mutation<
+      unknown,
+      { trackingId: string; status: string }
+    >({
+      // queryFn for mock, swap for real endpoint later
+      async queryFn({ trackingId, status }) {
+        try {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+
+          const pendingUpdates = [
+            {
+              trackingId: "SHP-2024-001",
+              status: "In Airport Customs",
+              location: "Shanghai",
+              time: "2h ago",
+            },
+            {
+              trackingId: "SHP-2024-005",
+              status: "At Sea",
+              location: "Atlantic Ocean",
+              time: "6h ago",
+            },
+            {
+              trackingId: "SHP-2024-009",
+              status: "Port Departure",
+              location: "Hong Kong",
+              time: "12h ago",
+            },
+          ];
+
+          const item = pendingUpdates.find((s) => s.trackingId === trackingId);
+
+          if (!item) {
+            return {
+              error: {
+                status: "CUSTOM_ERROR",
+                error: `Shipment ${trackingId} not found`,
+              },
+            };
+          }
+
+          const updated = {
+            ...item,
+            status,
+            time: "just now",
+          };
+
+          return { data: updated };
+        } catch (error) {
+          return {
+            error: {
+              status: "CUSTOM_ERROR",
+              error: "Failed to update shipment status",
+            },
+          };
         }
       },
     }),
@@ -762,7 +1115,19 @@ export const {
   useCreateCourierMutation,
   useGetAdminShipmentQuery,
   useUpdateShipmentPriceMutation,
+  useUpdateAssignCourierMutation,
+  useUpdateShipmentStatusMutation,
 
   // admin
   useGetAdminDasbhoardDataQuery,
+
+  // courier
+  useGetCourierDashboardDataQuery,
+  useGetCourierDeliveriesQuery,
+  useUpdateCourierShipmentStatusMutation,
+
+  // operational staff
+  useShipmentPendingUpdateQuery,
+  useGetShipmentByIdQuery,
+  // useUpdateShipmentStatusMutation,
 } = apiSlice;

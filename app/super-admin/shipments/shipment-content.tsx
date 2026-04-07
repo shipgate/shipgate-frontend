@@ -31,7 +31,7 @@ export default function ShipmentsContent() {
   );
   const [assignedPrice, setAssignedPrice] = useState("");
 
-  const filteredShipments = data?.data?.filter((shipment) => {
+  const filteredShipments = data?.data?.filter((shipment: any) => {
     const matchesSearch =
       shipment.id.includes(searchTerm.toUpperCase()) ||
       shipment.customer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -133,7 +133,7 @@ export default function ShipmentsContent() {
                 </tr>
               </thead>
               <tbody>
-                {filteredShipments?.map((shipment) => (
+                {filteredShipments?.map((shipment: any) => (
                   <tr
                     key={shipment.id}
                     className="border-b border-border hover:bg-muted/50"
@@ -151,11 +151,11 @@ export default function ShipmentsContent() {
                             : "secondary"
                         }
                       >
-                        {shipment.status}
+                        {shipment?.status}
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-foreground/70">
-                      {shipment.location}
+                      {shipment?.location}
                     </td>
                     <td className="py-3 px-4 font-semibold text-primary">
                       {Number(shipment?.totalCost)?.toLocaleString()}
@@ -180,7 +180,7 @@ export default function ShipmentsContent() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleCourierAssignment(shipment.id)}
+                          onClick={() => handleCourierAssignment(shipment?.id)}
                         >
                           <Check className="w-4 h-4 mr-1" /> Assign
                         </Button>

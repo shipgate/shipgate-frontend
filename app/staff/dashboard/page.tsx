@@ -1,29 +1,38 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Package, Clock, CheckCircle2, AlertCircle } from "lucide-react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Package, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { useShipmentPendingUpdateQuery } from "@/store/slice/apiSlice";
 
 export default function StaffDashboard() {
-  const stats = [
-    { label: "Today's Updates", value: "24", icon: Package, color: "bg-blue-100 text-blue-700" },
-    { label: "Pending Updates", value: "8", icon: Clock, color: "bg-orange-100 text-orange-700" },
-    { label: "Completed", value: "156", icon: CheckCircle2, color: "bg-green-100 text-green-700" },
-    { label: "Alerts", value: "3", icon: AlertCircle, color: "bg-red-100 text-red-700" },
-  ]
+  // const stats = [
+  //   { label: "Today's Updates", value: "24", icon: Package, color: "bg-blue-100 text-blue-700" },
+  //   { label: "Pending Updates", value: "8", icon: Clock, color: "bg-orange-100 text-orange-700" },
+  //   { label: "Completed", value: "156", icon: CheckCircle2, color: "bg-green-100 text-green-700" },
+  //   { label: "Alerts", value: "3", icon: AlertCircle, color: "bg-red-100 text-red-700" },
+  // ]
 
-  const pendingUpdates = [
-    { trackingId: "SHP-2024-001", status: "In Airport Customs", location: "Shanghai", time: "2h ago" },
-    { trackingId: "SHP-2024-005", status: "At Sea", location: "Atlantic Ocean", time: "6h ago" },
-    { trackingId: "SHP-2024-009", status: "Port Departure", location: "Hong Kong", time: "12h ago" },
-  ]
+  const { data: pendingShipmentData, isLoading } =
+    useShipmentPendingUpdateQuery({});
 
+  
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Operations Staff Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground">
+          Operations Staff Dashboard
+        </h1>
         <p className="text-foreground/60">Update and track shipment progress</p>
       </div>
+
+      {isLoading && <p>...loading staff</p>}
 
       {/* Stats */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -74,14 +83,21 @@ export default function StaffDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Pending Status Updates</CardTitle>
-          <CardDescription>Shipments awaiting next status update</CardDescription>
+          <CardDescription>
+            Shipments awaiting next status update
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {pendingUpdates.map((update, i) => (
-              <div key={i} className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+            {pendingShipmentData?.map((update, i) => (
+              <div
+                key={i}
+                className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+              >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-primary font-semibold">{update.trackingId}</span>
+                  <span className="font-mono text-primary font-semibold">
+                    {update.trackingId}
+                  </span>
                   <Badge variant="outline">{update.status}</Badge>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -93,8 +109,6 @@ export default function StaffDashboard() {
           </div>
         </CardContent>
       </Card>
-
-      
     </div>
-  )
+  );
 }
