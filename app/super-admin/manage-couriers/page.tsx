@@ -18,9 +18,10 @@ import {
 } from "@/store/slice/apiSlice";
 
 export default function ManageCouriers() {
-  const [deleteCourier, { isLoading: isDeleting }] = useDeleteAdminMutation();
+  const [deleteCourier, { isLoading: isDeleting, data: deleteData }] =
+    useDeleteAdminMutation();
 
-  const { data, isLoading } = useGetAllCourierUsersQuery({});
+  const { data, isLoading, refetch } = useGetAllCourierUsersQuery({});
   const [createCourier, { data: courierData, isLoading: isCreating }] =
     useCreateCourierMutation();
 
@@ -63,8 +64,13 @@ export default function ManageCouriers() {
     if (courierData) {
       setNewCourier({ name: "", email: "", phone: "", city: "Lagos" });
       setShowForm(false);
+      refetch();
     }
-  }, [courierData]);
+
+    if (deleteData) {
+      refetch();
+    }
+  }, [courierData, deleteData]);
 
   const handleAddCourier = () => {
     if (newCourier.name && newCourier.email && newCourier.phone) {
@@ -190,7 +196,7 @@ export default function ManageCouriers() {
       {/* Couriers Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Couriers ({data?.length})</CardTitle>
+          <CardTitle>Couriers ({data?.data?.length})</CardTitle>
           <CardDescription>
             Active and inactive delivery couriers
           </CardDescription>
@@ -211,7 +217,7 @@ export default function ManageCouriers() {
                 </tr>
               </thead>
               <tbody>
-                {data?.map((courier: any, index: number) => (
+                {data?.data?.map((courier: any, index: number) => (
                   <tr
                     key={index}
                     className="border-b border-border hover:bg-muted/50"
@@ -228,13 +234,13 @@ export default function ManageCouriers() {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2 text-foreground/70">
                         <Phone className="w-4 h-4" />
-                        {courier.phone}
+                        {courier.phoneNumber}
                       </div>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-primary" />
-                        {courier.city}
+                        {courier.assignedCity}
                       </div>
                     </td>
                     <td className="py-3 px-4">

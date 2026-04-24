@@ -67,7 +67,6 @@ export default function AdminShipmentsContent() {
     height: "",
   });
 
-
   useEffect(() => {
     if (shipmentPriceResult || shipmentCourierResult) {
       refetch();
@@ -110,7 +109,10 @@ export default function AdminShipmentsContent() {
 
   const handleAssignCourier = () => {
     if (selectedShipmentForCourier && selectedCourier) {
-      onShipmentCourierUpdate({courer_id: selectedCourier, trackingNumber:selectedShipmentForCourier })
+      onShipmentCourierUpdate({
+        courer_id: selectedCourier,
+        trackingNumber: selectedShipmentForCourier,
+      });
     }
   };
 
@@ -252,27 +254,25 @@ export default function AdminShipmentsContent() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 font-semibold text-primary">
-                      {Number(shipment?.totalCost)?.toLocaleString()}
+                      ${Number(shipment?.totalCost)?.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 flex justify-center items-center gap-2">
-                      {
-                        // shipment.status === "arrived" &&
-                        //   shipment.delivery === "Home" &&
-
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedShipmentForCourier(
-                              shipment?.trackingNumber,
-                            );
-                            setShowCourierModal(true);
-                          }}
-                        >
-                          <Check className="w-4 h-4 mr-1" /> Assign
-                        </Button>
-                      }
-                      {shipment.status === "arrived" && (
+                      {shipment.status === "ArrivingSoon" &&
+                        shipment.delivery === "Home" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedShipmentForCourier(
+                                shipment?.trackingNumber,
+                              );
+                              setShowCourierModal(true);
+                            }}
+                          >
+                            <Check className="w-4 h-4 mr-1" /> Assign
+                          </Button>
+                        )}
+                      {shipment.status === "ArrivingSoon" && (
                         <Button
                           variant="outline"
                           size="sm"
@@ -318,7 +318,7 @@ export default function AdminShipmentsContent() {
                   <option value="">Choose a courier...</option>
                   {courierData?.map((courier: any) => (
                     <option key={courier.id} value={courier.id.toString()}>
-                      {courier?.fullName} ({courier.city})
+                      {courier?.fullName} ({courier.assignedCity})
                     </option>
                   ))}
                 </select>

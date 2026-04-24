@@ -28,7 +28,7 @@ export default function CourierUpdateDelivery() {
     { data: courierStatusData, isLoading: isLoadingCourierStatus },
   ] = useUpdateCourierShipmentStatusMutation();
 
-  const deliveryStatuses = ["out_for_delivery", "delivered", "failed_delivery"];
+  const deliveryStatuses = ["OutForDelivery", "Delivered", "FailedDelivery"];
 
   const handleConfirm = () => {
     if (selectedDelivery && selectedStatus) {

@@ -48,7 +48,7 @@ export default function HomePage() {
       {/* <ExchangeRatesTicker /> */}
       <Navbar />
       {isSearching && <LoadingOverlay />}
-      <main className="w-full">
+      <main className="w-full ">
         {/* Hero Section */}
         <section
           className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"

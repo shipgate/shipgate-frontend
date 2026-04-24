@@ -24,8 +24,8 @@ export default function CourierDashboard() {
       label: "Today's Deliveries",
       value: isLoading
         ? "..."
-        : data?.today_deliveries
-          ? Number(data?.today_deliveries)
+        : data?.todayDeliveries
+          ? Number(data?.todayDeliveries)
           : "0",
       icon: Package,
       color: "bg-blue-100 text-blue-700",
@@ -34,8 +34,8 @@ export default function CourierDashboard() {
       label: "In Progress",
       value: isLoading
         ? "..."
-        : data?.today_deliveries
-          ? Number(data?.today_deliveries)
+        : data?.inProgress
+          ? Number(data?.inProgress)
           : "0",
       icon: Clock,
       color: "bg-orange-100 text-orange-700",
@@ -44,8 +44,8 @@ export default function CourierDashboard() {
       label: "Completed",
       value: isLoading
         ? "..."
-        : data?.today_deliveries
-          ? Number(data?.today_deliveries)
+        : data?.completed
+          ? Number(data?.completed)
           : "0",
       icon: CheckCircle2,
       color: "bg-green-100 text-green-700",
@@ -54,8 +54,8 @@ export default function CourierDashboard() {
       label: "Earnings",
       value: isLoading
         ? "..."
-        : data?.today_deliveries
-          ? `₦${Number(data?.today_deliveries)}`
+        : data?.earnings
+          ? `₦${Number(data?.earnings)}`
           : "0",
       icon: MapPin,
       color: "bg-purple-100 text-purple-700",

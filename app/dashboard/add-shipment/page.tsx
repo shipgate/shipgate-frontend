@@ -75,6 +75,7 @@ export default function AddShipmentPage() {
     recipientEmail: "",
     quantity: "",
     cbmVolume: "",
+    delivery: "",
   });
 
   const [error, setError] = useState("");
@@ -116,6 +117,7 @@ export default function AddShipmentPage() {
       recipientState: formData?.recipientState,
       recipientCity: formData?.recipientCity,
       recipientEmail: formData?.recipientEmail,
+      delivery: formData?.delivery,
       item: {
         itemDescription: formData?.itemDescription,
         quantity: Number(formData?.quantity),
@@ -155,6 +157,7 @@ export default function AddShipmentPage() {
           recipientEmail: "",
           senderCity: "",
           senderEmail: "",
+          delivery: "",
         });
       })
       .catch((err) => {
@@ -285,6 +288,30 @@ export default function AddShipmentPage() {
                   placeholder="Sender State/Province e.g Shanghai"
                 />
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recipient Details */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Delivery Method</CardTitle>
+            <CardDescription>
+              Choose how you want to receive your shipment
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <select
+                name="delivery"
+                value={formData.delivery}
+                onChange={handleChange}
+                className="w-full p-3 border border-border rounded-lg bg-background"
+              >
+                <option value={""}>Select Delivery Method</option>;
+                <option value={"home"}>Home Delivery</option>;
+                <option value={"warehouse"}>Warehouse </option>;
+              </select>
             </div>
           </CardContent>
         </Card>

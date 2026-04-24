@@ -12,16 +12,34 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Check } from "lucide-react";
 import {
+  useAssignCourierMutation,
   useGetAdminShipmentQuery,
+  useGetAllCourierUsersQuery,
+  useUpdateAssignCourierMutation,
   useUpdateShipmentPriceMutation,
 } from "@/store/slice/apiSlice";
 
 export default function ShipmentsContent() {
+  const [selectedCourier, setSelectedCourier] = useState("");
+
+  const [selectedShipmentForCourier, setSelectedShipmentForCourier] = useState<
+    string | null
+  >(null);
+  const [showCourierModal, setShowCourierModal] = useState(false);
+
   const [
     onShipmentPriceUpdate,
     { data: shipmentResult, isLoading: isLoadingPriceUpdate },
   ] = useUpdateShipmentPriceMutation();
   const { data, isLoading, refetch } = useGetAdminShipmentQuery({});
+
+  const [
+    onShipmentCourierUpdate,
+    { data: shipmentCourierResult, isLoading: isUpdatingCourier },
+  ] = useAssignCourierMutation();
+
+  const { data: courierData, isLoading: isLoadingCourier } =
+    useGetAllCourierUsersQuery({});
 
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -47,8 +65,9 @@ export default function ShipmentsContent() {
       setShowPriceModal(false);
       setAssignedPrice("");
       setShipmentToPriceId(null);
+      refetch();
     }
-  }, [shipmentResult]);
+  }, [shipmentResult, shipmentCourierResult]);
 
   const handlePriceAssignment = () => {
     if (shipmentToPriceId && assignedPrice) {
@@ -61,9 +80,13 @@ export default function ShipmentsContent() {
       });
     }
   };
-
-  const handleCourierAssignment = (shipmentId: string) => {
-    console.log(`[v0] Assigning courier to shipment: ${shipmentId}`);
+  const handleAssignCourier = () => {
+    if (selectedShipmentForCourier && selectedCourier) {
+      onShipmentCourierUpdate({
+        courierUserId: selectedCourier,
+        trackingNumber: selectedShipmentForCourier,
+      });
+    }
   };
 
   return (
@@ -155,14 +178,14 @@ export default function ShipmentsContent() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-foreground/70">
-                      {shipment?.location}
+                      {shipment?.senderCity}, {shipment?.senderState} &rarr;{" "}
+                      {shipment?.recipientCity}, {shipment?.recipientState}
                     </td>
                     <td className="py-3 px-4 font-semibold text-primary">
-                      {Number(shipment?.totalCost)?.toLocaleString()}
+                      ${Number(shipment?.totalCost)?.toLocaleString()}
                     </td>
                     <td className="py-3 px-4 space-x-1">
-                      {
-                        // shipment.status === "arrived" &&
+                      {shipment.status === "ArrivingSoon" && (
                         <Button
                           variant="outline"
                           size="sm"
@@ -173,18 +196,24 @@ export default function ShipmentsContent() {
                         >
                           Set Price
                         </Button>
-                      }
-                      {
-                        // shipment?.shippingTypeEnum?.toLowerCase()?.includes("air") &&
-                        //   shipment?.status === "arrived" &&
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleCourierAssignment(shipment?.id)}
-                        >
-                          <Check className="w-4 h-4 mr-1" /> Assign
-                        </Button>
-                      }
+                      )}
+                      {shipment?.shippingTypeEnum
+                        ?.toLowerCase()
+                        ?.includes("air") &&
+                        shipment?.status === "ArrivingSoon" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedShipmentForCourier(
+                                shipment?.trackingNumber,
+                              );
+                              setShowCourierModal(true);
+                            }}
+                          >
+                            <Check className="w-4 h-4 mr-1" /> Assign
+                          </Button>
+                        )}
                     </td>
                   </tr>
                 ))}
@@ -193,6 +222,62 @@ export default function ShipmentsContent() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Courier Assignment Modal */}
+      {showCourierModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle>
+                Assign Courier - {selectedShipmentForCourier}
+              </CardTitle>
+              <CardDescription>
+                Select a courier for this home delivery
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-foreground">
+                  Select Courier
+                </label>
+                <select
+                  value={selectedCourier}
+                  onChange={(e) => setSelectedCourier(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">Choose a courier...</option>
+                  {courierData?.data?.map((courier: any) => (
+                    <option key={courier.id} value={courier.id.toString()}>
+                      {courier?.fullName} ({courier.assignedCity})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCourierModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-primary hover:bg-primary/90"
+                  onClick={handleAssignCourier}
+                  disabled={!selectedCourier}
+                >
+                  {isLoadingCourier ? (
+                    "...loading"
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4 mr-2" /> Confirm
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Price Assignment Modal */}
       {showPriceModal && (

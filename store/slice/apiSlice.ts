@@ -220,6 +220,7 @@ export const apiSlice = createApi({
         recipientState: string;
         recipientCity: string;
         recipientEmail: string;
+        delivery: string;
         item: {
           itemDescription: string;
           quantity: number;
@@ -555,7 +556,21 @@ export const apiSlice = createApi({
     // useGetAllCourierUsersQuery
     getAllCourierUsers: builder.query({
       query: () => ({
-        url: `/super-admin/all-users/Courier`,
+        url: `/super-admin/all-couriers`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    // useGetCourierWithShipmentQuery
+    getCourierWithShipment: builder.query({
+      query: () => ({
+        url: `/admin/couriers-with-shipments`,
       }),
       async onQueryStarted(args, { queryFulfilled }) {
         try {
@@ -584,7 +599,7 @@ export const apiSlice = createApi({
     // super admin
     // useCreateCourierMutation
     createCourier: builder.mutation<
-      unknown,
+      { message: string },
       {
         fullName: string;
         email: string;
@@ -602,8 +617,8 @@ export const apiSlice = createApi({
       }),
       async onQueryStarted(args, { queryFulfilled }) {
         try {
-          await queryFulfilled;
-          successToast("Courier created successfully");
+          const { data } = await queryFulfilled;
+          successToast(data?.message || "Courier created successfully");
         } catch (error) {
           const errorM = error as CustomError;
           errorToast(errorM.error?.data?.error || "Unexpected errror");
@@ -741,6 +756,58 @@ export const apiSlice = createApi({
         }
       },
     }),
+    // useAssignCourierMutation
+    assignCourier: builder.mutation<
+      unknown,
+      {
+        trackingNumber: string;
+        courierUserId: string;
+      }
+    >({
+      query: (formData) => ({
+        url: `/admin/assign-courier`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Price updated successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    // useAssignMultipleCourierMutation
+    assignMultipleCourier: builder.mutation<
+      unknown,
+      {
+        trackingNumber: string[];
+        courierUserId: string;
+      }
+    >({
+      query: (formData) => ({
+        url: `/admin/Multiple-assign-couriers`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Shipments assigned successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
 
     // useGetAdminDasbhoardDataQuery
     getAdminDasbhoardData: builder.query({
@@ -757,53 +824,46 @@ export const apiSlice = createApi({
       },
     }),
 
+    // useGetManageCustomersQuery
+    getManageCustomers: builder.query({
+      query: () => ({
+        url: `/shipments/manage-customer`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+    // useGetWarehouseShipmentQuery
+    getWarehouseShipment: builder.query({
+      query: () => ({
+        url: `/admin/home-warehouse`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
+
     // useShipmentPendingUpdateQuery
     shipmentPendingUpdate: builder.query({
-      // query: () => ({
-      //   url: `/admin/dashboard`,
-      // }),
-      // async onQueryStarted(args, { queryFulfilled }) {
-      //   try {
-      //     await queryFulfilled;
-      //   } catch (error) {
-      //     const errorM = error as CustomError;
-      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
-      //   }
-      // },
-      async queryFn() {
+      query: () => ({
+        url: `/admin/all-pending-shipment`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
         try {
-          // Simulate network delay
-          await new Promise((resolve) => setTimeout(resolve, 200));
-
-          const pendingUpdates = [
-            {
-              trackingId: "SHP-2024-001",
-              status: "In Airport Customs",
-              location: "Shanghai",
-              time: "2h ago",
-            },
-            {
-              trackingId: "SHP-2024-005",
-              status: "At Sea",
-              location: "Atlantic Ocean",
-              time: "6h ago",
-            },
-            {
-              trackingId: "SHP-2024-009",
-              status: "Port Departure",
-              location: "Hong Kong",
-              time: "12h ago",
-            },
-          ];
-
-          return { data: pendingUpdates };
+          await queryFulfilled;
         } catch (error) {
-          return {
-            error: {
-              status: "CUSTOM_ERROR",
-              error: "Failed to fetch pending updates",
-            },
-          };
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
         }
       },
     }),
@@ -851,99 +911,41 @@ export const apiSlice = createApi({
       },
     }),
 
-    //useUpdateShipmentStatusMutation
-    // updateShipmentStatus: builder.mutation<
-    //   unknown,
-    //   { trackingId: string; status: string }
-    // >({
-    //   // queryFn for mock, swap for real endpoint later
-    //   async queryFn({ trackingId, status }) {
-    //     try {
-    //       await new Promise((resolve) => setTimeout(resolve, 200));
-
-    //       const pendingUpdates = [
-    //         {
-    //           trackingId: "SHP-2024-001",
-    //           status: "In Airport Customs",
-    //           location: "Shanghai",
-    //           time: "2h ago",
-    //         },
-    //         {
-    //           trackingId: "SHP-2024-005",
-    //           status: "At Sea",
-    //           location: "Atlantic Ocean",
-    //           time: "6h ago",
-    //         },
-    //         {
-    //           trackingId: "SHP-2024-009",
-    //           status: "Port Departure",
-    //           location: "Hong Kong",
-    //           time: "12h ago",
-    //         },
-    //       ];
-
-    //       const item = pendingUpdates.find((s) => s.trackingId === trackingId);
-
-    //       if (!item) {
-    //         return {
-    //           error: {
-    //             status: "CUSTOM_ERROR",
-    //             error: `Shipment ${trackingId} not found`,
-    //           },
-    //         };
-    //       }
-
-    //       const updated = {
-    //         ...item,
-    //         status,
-    //         time: "just now",
-    //       };
-
-    //       return { data: updated };
-    //     } catch (error) {
-    //       return {
-    //         error: {
-    //           status: "CUSTOM_ERROR",
-    //           error: "Failed to update shipment status",
-    //         },
-    //       };
-    //     }
-    //   },
-    // }),
+    //useUpdateShipmentCourierStatusMutation
+    updateShipmentCourierStatus: builder.mutation<
+      unknown,
+      { trackingNumber: string; status: string }
+    >({
+      query: (formData) => ({
+        url: `/admin/update-status-base-air-sea`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Shipments status updated successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
 
     // useGetCourierDashboardDataQuery
     getCourierDashboardData: builder.query({
-      // query: () => ({
-      //   url: `/admin/dashboard`,
-      // }),
-      // async onQueryStarted(args, { queryFulfilled }) {
-      //   try {
-      //     await queryFulfilled;
-      //   } catch (error) {
-      //     const errorM = error as CustomError;
-      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
-      //   }
-      // },
-      async queryFn() {
+      query: () => ({
+        url: `/courier/dashboard`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
         try {
-          // Simulate network delay
-          await new Promise((resolve) => setTimeout(resolve, 200));
-
-          const pendingUpdates = {
-            today_deliveries: 8,
-            in_progress: 3,
-            completed: 5,
-            earnings: 12500,
-          };
-
-          return { data: pendingUpdates };
+          await queryFulfilled;
         } catch (error) {
-          return {
-            error: {
-              status: "CUSTOM_ERROR",
-              error: "Failed to fetch pending updates",
-            },
-          };
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
         }
       },
     }),
@@ -1112,14 +1114,17 @@ export const {
   useGetDashboardDataQuery,
   useCreateAdminMutation,
   useDeleteAdminMutation,
-  useCreateCourierMutation,
   useGetAdminShipmentQuery,
   useUpdateShipmentPriceMutation,
   useUpdateAssignCourierMutation,
   useUpdateShipmentStatusMutation,
+  useCreateCourierMutation,
+  useAssignCourierMutation,
+  useGetCourierWithShipmentQuery,
 
   // admin
   useGetAdminDasbhoardDataQuery,
+  useGetManageCustomersQuery,
 
   // courier
   useGetCourierDashboardDataQuery,
@@ -1130,4 +1135,8 @@ export const {
   useShipmentPendingUpdateQuery,
   useGetShipmentByIdQuery,
   // useUpdateShipmentStatusMutation,
+
+  useGetWarehouseShipmentQuery,
+  useAssignMultipleCourierMutation,
+  useUpdateShipmentCourierStatusMutation,
 } = apiSlice;

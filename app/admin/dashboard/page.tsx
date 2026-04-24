@@ -42,7 +42,7 @@ export default function AdminDashboard() {
       label: "In Transit",
       value: isLoading
         ? "..."
-        : (Number(data?.total_transit)?.toLocaleString() ?? "0"),
+        : (Number(data?.data?.inTransit)?.toLocaleString() ?? "0"),
       icon: TrendingUp,
       color: "bg-orange-100 text-orange-700",
     },
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
                       </Badge>
                     </td>
                     <td className="py-3 px-4 font-semibold text-primary">
-                      {Number(shipment?.totalCost).toLocaleString()}
+                      ${Number(shipment?.totalCost).toLocaleString()}
                     </td>
                     <td className="py-3 px-4">
                       <Button variant="outline" size="sm">
