@@ -103,16 +103,16 @@ export default function AdminStatusUpdates() {
               Update Status for {selectedShipment?.trackingNumber}
             </CardTitle>
             <CardDescription>
-              Current status:{" "}
+              Current status:
               {
                 filteredShipments?.find(
-                  (s) => s.trackingNumber === selectedShipment?.trackingNumber,
+                  (s: any) =>
+                    s.trackingNumber === selectedShipment?.trackingNumber,
                 )?.status
               }
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
-            {/* Status Options */}
             <div className="space-y-3">
               <label className="text-sm font-semibold text-foreground">
                 Select New Status
@@ -161,7 +161,6 @@ export default function AdminStatusUpdates() {
               </div>
             </div>
 
-            {/* Confirm Button */}
             <div className="pt-4 border-t border-border">
               <Button
                 onClick={handleConfirmUpdate}
@@ -172,19 +171,21 @@ export default function AdminStatusUpdates() {
               </Button>
             </div>
 
-            {statusData && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                <div>
-                  <p className="font-semibold text-green-900">
-                    Status updated successfully
-                  </p>
-                  <p className="text-sm text-green-800">
-                    Customer has been notified of the update
-                  </p>
+            <>
+              {statusData && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  <div>
+                    <p className="font-semibold text-green-900">
+                      Status updated successfully
+                    </p>
+                    <p className="text-sm text-green-800">
+                      Customer has been notified of the update
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </>
           </CardContent>
         </Card>
       )}
@@ -199,7 +200,7 @@ export default function AdminStatusUpdates() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {filteredShipments?.map((shipment) => (
+            {filteredShipments?.map((shipment: any) => (
               <button
                 key={shipment?.trackingNumber}
                 onClick={() => setSelectedShipment(shipment)}

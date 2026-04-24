@@ -22,7 +22,6 @@ export default function StaffDashboard() {
   const { data: pendingShipmentData, isLoading } =
     useShipmentPendingUpdateQuery({});
 
-  
   return (
     <div className="space-y-6">
       <div>
@@ -89,7 +88,7 @@ export default function StaffDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {pendingShipmentData?.map((update, i) => (
+            {pendingShipmentData?.map((update: any, i: any) => (
               <div
                 key={i}
                 className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"

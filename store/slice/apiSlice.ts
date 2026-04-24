@@ -870,43 +870,15 @@ export const apiSlice = createApi({
 
     // useGetShipmentByIdQuery
     getShipmentById: builder.query({
-      // query: () => ({
-      //   url: `/admin/dashboard`,
-      // }),
-      // async onQueryStarted(args, { queryFulfilled }) {
-      //   try {
-      //     await queryFulfilled;
-      //   } catch (error) {
-      //     const errorM = error as CustomError;
-      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
-      //   }
-      // },
-      async queryFn(trackingId) {
+      query: () => ({
+        url: `/staff/shipment`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
         try {
-          // Simulate network delay
-          await new Promise((resolve) => setTimeout(resolve, 200));
-
-          if (trackingId)
-            return {
-              data: {
-                id: "SHP-2024-001",
-                customer: "John Doe",
-                type: "air",
-                current: "in_airport_customs",
-                location: "Shanghai Pudong Airport",
-                weight: "150kg",
-                container: "",
-              },
-            };
-
-          return null;
+          await queryFulfilled;
         } catch (error) {
-          return {
-            error: {
-              status: "CUSTOM_ERROR",
-              error: "Failed to fetch pending updates",
-            },
-          };
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
         }
       },
     }),

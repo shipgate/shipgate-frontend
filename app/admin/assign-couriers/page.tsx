@@ -81,7 +81,7 @@ export default function AssignCouriers() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {assignedCourierData?.data?.map((courier) => (
+            {assignedCourierData?.data?.map((courier: any) => (
               <button
                 key={courier?.courierId}
                 onClick={() => setSelectedCourier(courier?.courierId)}
@@ -114,7 +114,7 @@ export default function AssignCouriers() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            {warehouseShipmentData?.data?.data.map((shipment) => (
+            {warehouseShipmentData?.data?.data.map((shipment: any) => (
               <button
                 key={shipment.id}
                 onClick={() => toggleShipment(shipment.id)}
