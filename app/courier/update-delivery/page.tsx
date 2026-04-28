@@ -28,12 +28,12 @@ export default function CourierUpdateDelivery() {
     { data: courierStatusData, isLoading: isLoadingCourierStatus },
   ] = useUpdateCourierShipmentStatusMutation();
 
-  const deliveryStatuses = ["OutForDelivery", "Delivered", "FailedDelivery"];
+  const deliveryStatuses = ["PendingDelivery", "Delivered", "FailedDelivery", "PackageReceived"];
 
   const handleConfirm = () => {
     if (selectedDelivery && selectedStatus) {
       onUpdateCourierStatus({
-        trackingId: deliveryDetails?.id,
+        trackingNumber: deliveryDetails?.trackingNumber,
         status: selectedStatus,
       });
     }
@@ -70,19 +70,20 @@ export default function CourierUpdateDelivery() {
                 <div>
                   <p className="text-xs text-foreground/60">Customer</p>
                   <p className="font-semibold text-foreground">
-                    {deliveryDetails.customer}
+                    {deliveryDetails.recipientName}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs text-foreground/60">Phone</p>
                   <p className="font-semibold text-foreground">
-                    {deliveryDetails.phone}
+                    {deliveryDetails.recipientPhone}
                   </p>
                 </div>
                 <div className="col-span-2 md:col-span-1">
                   <p className="text-xs text-foreground/60">Address</p>
                   <p className="font-semibold text-foreground text-sm">
-                    {deliveryDetails.address}
+                    {deliveryDetails?.recipientCity},{" "}
+                    {deliveryDetails?.recipientState}
                   </p>
                 </div>
               </div>
@@ -152,15 +153,15 @@ export default function CourierUpdateDelivery() {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {courierData?.map((delivery) => (
+            {courierData?.data?.map((delivery: any) => (
               <button
                 key={delivery.id}
                 onClick={() => {
-                  setSelectedDelivery(delivery.id);
+                  setSelectedDelivery(delivery.trackingNumber);
                   setDeliveryDetails(delivery);
                 }}
                 className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                  selectedDelivery === delivery.id
+                  selectedDelivery === delivery.trackingNumber
                     ? "border-primary bg-primary/5"
                     : "border-border hover:border-primary/50"
                 }`}
@@ -169,16 +170,16 @@ export default function CourierUpdateDelivery() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="font-semibold text-foreground">
-                        {delivery.id}
+                        {delivery.trackingNumber}
                       </p>
                       <Badge variant="outline">{delivery.status}</Badge>
                     </div>
                     <p className="text-sm text-foreground/60">
-                      {delivery.customer}
+                      {delivery?.recipientName}
                     </p>
                     <div className="flex items-center gap-1 mt-2 text-sm text-foreground/60">
                       <MapPin className="w-4 h-4" />
-                      {delivery.address}
+                      {delivery.recipientCity}, {delivery.recipientState}
                     </div>
                   </div>
                 </div>

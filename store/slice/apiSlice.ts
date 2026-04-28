@@ -924,53 +924,15 @@ export const apiSlice = createApi({
 
     // useGetCourierDeliveriesQuery
     getCourierDeliveries: builder.query({
-      // query: () => ({
-      //   url: `/admin/dashboard`,
-      // }),
-      // async onQueryStarted(args, { queryFulfilled }) {
-      //   try {
-      //     await queryFulfilled;
-      //   } catch (error) {
-      //     const errorM = error as CustomError;
-      //     errorToast(errorM.error?.data?.error || "Unexpected errror");
-      //   }
-      // },
-      async queryFn() {
+      query: () => ({
+        url: `/admin/assigned-couriers`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
         try {
-          // Simulate network delay
-          await new Promise((resolve) => setTimeout(resolve, 200));
-
-          const pendingUpdates = [
-            {
-              id: "SHP-2024-001",
-              customer: "John Doe",
-              address: "123 Lekki Road",
-              phone: "2348065418027",
-              status: "pending",
-            },
-            {
-              id: "SHP-2024-004",
-              customer: "Mary Johnson",
-              address: "456 Victoria Island",
-              phone: "2348065418027",
-              status: "pending",
-            },
-            {
-              id: "SHP-2024-007",
-              customer: "Ahmed Hassan",
-              address: "789 Ikoyi Drive",
-              phone: "2348065418027",
-              status: "in_progress",
-            },
-          ];
-          return { data: pendingUpdates };
+          await queryFulfilled;
         } catch (error) {
-          return {
-            error: {
-              status: "CUSTOM_ERROR",
-              error: "Failed to fetch pending updates",
-            },
-          };
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
         }
       },
     }),
@@ -978,59 +940,24 @@ export const apiSlice = createApi({
     //useUpdateCourierShipmentStatusMutation
     updateCourierShipmentStatus: builder.mutation<
       unknown,
-      { trackingId: string; status: string }
+      { trackingNumber: string; status: string }
     >({
       // queryFn for mock, swap for real endpoint later
-      async queryFn({ trackingId, status }) {
+      query: (formData) => ({
+        url: `/admin/update-status-base-air-sea`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: formData,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
         try {
-          await new Promise((resolve) => setTimeout(resolve, 200));
-
-          const pendingUpdates = [
-            {
-              trackingId: "SHP-2024-001",
-              status: "In Airport Customs",
-              location: "Shanghai",
-              time: "2h ago",
-            },
-            {
-              trackingId: "SHP-2024-005",
-              status: "At Sea",
-              location: "Atlantic Ocean",
-              time: "6h ago",
-            },
-            {
-              trackingId: "SHP-2024-009",
-              status: "Port Departure",
-              location: "Hong Kong",
-              time: "12h ago",
-            },
-          ];
-
-          const item = pendingUpdates.find((s) => s.trackingId === trackingId);
-
-          if (!item) {
-            return {
-              error: {
-                status: "CUSTOM_ERROR",
-                error: `Shipment ${trackingId} not found`,
-              },
-            };
-          }
-
-          const updated = {
-            ...item,
-            status,
-            time: "just now",
-          };
-
-          return { data: updated };
+          await queryFulfilled;
+          successToast("Shipments status updated successfully");
         } catch (error) {
-          return {
-            error: {
-              status: "CUSTOM_ERROR",
-              error: "Failed to update shipment status",
-            },
-          };
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
         }
       },
     }),

@@ -31,7 +31,7 @@ export default function StaffDashboard() {
         <p className="text-foreground/60">Update and track shipment progress</p>
       </div>
 
-      {isLoading && <p>...loading staff</p>}
+      {isLoading && <p>...loading pending shipments</p>}
 
       {/* Stats */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -87,25 +87,34 @@ export default function StaffDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {pendingShipmentData?.map((update: any, i: any) => (
-              <div
-                key={i}
-                className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-primary font-semibold">
-                    {update.trackingId}
-                  </span>
-                  <Badge variant="outline">{update.status}</Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-foreground/60">{update.location}</span>
-                  <span className="text-foreground/50">{update.time}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          {pendingShipmentData?.data && (
+            <div className="space-y-3">
+              {pendingShipmentData?.data?.length > 0 &&
+                pendingShipmentData?.data?.map((update: any, i: any) => (
+                  <div
+                    key={i}
+                    className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-primary font-semibold">
+                        {update.trackingId}
+                      </span>
+                      <Badge variant="outline">{update.status}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-foreground/60">
+                        {update.location}
+                      </span>
+                      <span className="text-foreground/50">{update.time}</span>
+                    </div>
+                  </div>
+                ))}
+
+              {!pendingShipmentData?.data?.length && (
+                <p>No pending shipment found</p>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

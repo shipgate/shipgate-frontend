@@ -106,18 +106,18 @@ export default function CourierDashboard() {
         <CardContent>
           <div className="space-y-3">
             {isLoadingCourier && <p>...loading deliveries</p>}
-            {courierData?.map((delivery) => (
+            {courierData?.data?.map((delivery: any) => (
               <div
-                key={delivery.id}
+                key={delivery?.trackingNumber}
                 className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <p className="font-semibold text-foreground">
-                      {delivery.id}
+                      {delivery?.trackingNumber}
                     </p>
                     <p className="text-sm text-foreground/60">
-                      {delivery.customer}
+                      {delivery?.recipientName}
                     </p>
                   </div>
                   <Badge
@@ -125,14 +125,12 @@ export default function CourierDashboard() {
                       delivery.status === "in_progress" ? "default" : "outline"
                     }
                   >
-                    {delivery.status === "in_progress"
-                      ? "In Progress"
-                      : "Pending"}
+                    {delivery.status}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-1 text-sm text-foreground/60">
                   <MapPin className="w-4 h-4" />
-                  {delivery.address}
+                  {delivery.recipientCity}, {delivery.recipientState}
                 </div>
               </div>
             ))}

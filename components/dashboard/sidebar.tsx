@@ -39,7 +39,11 @@ const superAdminMenuItems = [
   // { icon: MapPin, label: "Shipping Config", href: "/super-admin/shipping-config" },
   // { icon: ShoppingCart, label: "Carriers", href: "/super-admin/carriers" },
   { icon: Package, label: "All Shipments", href: "/super-admin/shipments" },
-  { icon: MessageSquare, label: "Support Tickets", href: "/super-admin/support-tickets" },
+  {
+    icon: MessageSquare,
+    label: "Support Tickets",
+    href: "/super-admin/support-tickets",
+  },
   // { icon: BarChart3, label: "Reports", href: "/super-admin/reports" },
   // { icon: Settings, label: "System Settings", href: "/super-admin/settings" },
 ];
@@ -51,13 +55,17 @@ const adminMenuItems = [
   { icon: MapPin, label: "Status Updates", href: "/admin/status-updates" },
   { icon: Truck, label: "Assign to Couriers", href: "/admin/assign-couriers" },
   { icon: FileText, label: "Reports", href: "/admin/reports" },
-  { icon: MessageSquare, label: "Support Tickets", href: "/admin/support-tickets" },
+  {
+    icon: MessageSquare,
+    label: "Support Tickets",
+    href: "/admin/support-tickets",
+  },
   { icon: Settings, label: "Settings", href: "/admin/settings" },
 ];
 
 const staffMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/staff/dashboard" },
-  { icon: Package, label: "Track Shipments", href: "/staff/track" },
+  // { icon: Package, label: "Track Shipments", href: "/staff/track" },
   { icon: MapPin, label: "Update Status", href: "/staff/status-updates" },
   { icon: Bell, label: "Notifications", href: "/staff/notifications" },
   { icon: Settings, label: "Settings", href: "/staff/settings" },
@@ -65,7 +73,7 @@ const staffMenuItems = [
 
 const courierMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/courier/dashboard" },
-  { icon: Truck, label: "Assigned Deliveries", href: "/courier/deliveries" },
+  // { icon: Truck, label: "Assigned Deliveries", href: "/courier/deliveries" },
   { icon: MapPin, label: "Update Delivery", href: "/courier/update-delivery" },
   { icon: Settings, label: "Settings", href: "/courier/settings" },
 ];
