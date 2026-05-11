@@ -1,9 +1,11 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { useGetUserNotificationQuery } from "@/store/slice/apiSlice";
 
 // Mock notifications data
 const mockShipmentNotifications = [
@@ -39,7 +41,7 @@ const mockShipmentNotifications = [
     timestamp: "2 days ago",
     read: true,
   },
-]
+];
 
 const mockAccountNotifications = [
   {
@@ -66,14 +68,15 @@ const mockAccountNotifications = [
     timestamp: "1 week ago",
     read: true,
   },
-]
+];
 
 const mockAnnouncementNotifications = [
   {
     id: 8,
     icon: "📢",
     title: "New Feature: Real-time Tracking",
-    message: "We've launched enhanced real-time tracking with flight details and live location updates",
+    message:
+      "We've launched enhanced real-time tracking with flight details and live location updates",
     timestamp: "2 days ago",
     read: false,
   },
@@ -81,7 +84,8 @@ const mockAnnouncementNotifications = [
     id: 9,
     icon: "💳",
     title: "Exchange Rate Update",
-    message: "USD to NGN rate updated: 1 USD = ₦1,650. CNY to NGN rate: 1 CNY = ₦230",
+    message:
+      "USD to NGN rate updated: 1 USD = ₦1,650. CNY to NGN rate: 1 CNY = ₦230",
     timestamp: "4 days ago",
     read: true,
   },
@@ -93,29 +97,43 @@ const mockAnnouncementNotifications = [
     timestamp: "1 week ago",
     read: true,
   },
-]
+];
 
 export default function NotificationsPage() {
-  const [shipmentNotifs, setShipmentNotifs] = useState(mockShipmentNotifications)
-  const [accountNotifs, setAccountNotifs] = useState(mockAccountNotifications)
-  const [announcementNotifs, setAnnouncementNotifs] = useState(mockAnnouncementNotifications)
+  const { data: notificationData } = useGetUserNotificationQuery({});
+  const [shipmentNotifs, setShipmentNotifs] = useState(
+    mockShipmentNotifications,
+  );
+  const [accountNotifs, setAccountNotifs] = useState(mockAccountNotifications);
+  const [announcementNotifs, setAnnouncementNotifs] = useState(
+    mockAnnouncementNotifications,
+  );
 
-  const markAsRead = (id: number, type: "shipment" | "account" | "announcement") => {
+  const markAsRead = (
+    id: number,
+    type: "shipment" | "account" | "announcement",
+  ) => {
     if (type === "shipment") {
-      setShipmentNotifs(shipmentNotifs.map((n) => (n.id === id ? { ...n, read: true } : n)))
+      setShipmentNotifs(
+        shipmentNotifs.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
     } else if (type === "account") {
-      setAccountNotifs(accountNotifs.map((n) => (n.id === id ? { ...n, read: true } : n)))
+      setAccountNotifs(
+        accountNotifs.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
     } else {
-      setAnnouncementNotifs(announcementNotifs.map((n) => (n.id === id ? { ...n, read: true } : n)))
+      setAnnouncementNotifs(
+        announcementNotifs.map((n) => (n.id === id ? { ...n, read: true } : n)),
+      );
     }
-  }
+  };
 
   const NotificationItem = ({
     notification,
     type,
   }: {
-    notification: (typeof mockShipmentNotifications)[0]
-    type: "shipment" | "account" | "announcement"
+    notification: any;
+    type: "shipment" | "account" | "announcement";
   }) => (
     <Card
       className="mb-3 hover:shadow-md transition-shadow cursor-pointer"
@@ -123,28 +141,49 @@ export default function NotificationsPage() {
     >
       <CardContent className="pt-4">
         <div className="flex gap-4">
-          <span className="text-2xl flex-shrink-0">{notification.icon}</span>
+          <span className="text-2xl flex-shrink-0">
+            {type === "shipment" && "📦"}
+            {type === "announcement" && "📢"}
+            {/* {type === "account" && "📦"} */}
+          </span>
           <div className="flex-1">
             <div className="flex items-start justify-between">
-              <h4 className={cn("font-semibold text-foreground", !notification.read && "text-primary")}>
+              <h4
+                className={cn(
+                  "font-semibold text-foreground",
+                  !notification?.isRead && "text-primary",
+                )}
+              >
                 {notification.title}
               </h4>
-              {!notification.read && <Badge className="bg-primary">New</Badge>}
+              {!notification.isRead && (
+                <Badge className="bg-primary">New</Badge>
+              )}
             </div>
-            <p className="text-sm text-foreground/70 mt-1">{notification.message}</p>
-            <p className="text-xs text-muted-foreground mt-2">{notification.timestamp}</p>
+            <p className="text-sm text-foreground/70 mt-1">
+              {notification?.message}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              {notification?.timeAgo}
+            </p>
           </div>
         </div>
       </CardContent>
     </Card>
-  )
+  );
+
+  console.log(notificationData?.data?.data);
 
   return (
     <div className="flex-1 overflow-auto">
       <div className="p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Notifications</h1>
-          <p className="text-foreground/70">Stay updated with your shipments and account activity</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Notifications
+          </h1>
+          <p className="text-foreground/70">
+            Stay updated with your shipments and account activity
+          </p>
         </div>
 
         <Tabs defaultValue="shipment" className="w-full">
@@ -155,12 +194,20 @@ export default function NotificationsPage() {
           </TabsList>
 
           <TabsContent value="shipment" className="space-y-4">
-            {shipmentNotifs.length > 0 ? (
-              shipmentNotifs.map((notif) => <NotificationItem key={notif.id} notification={notif} type="shipment" />)
+            {notificationData?.data?.data?.length > 0 ? (
+              notificationData?.data?.data?.map((notif: any) => (
+                <NotificationItem
+                  key={notif.id}
+                  notification={notif}
+                  type="shipment"
+                />
+              ))
             ) : (
               <Card>
                 <CardContent className="pt-8 text-center">
-                  <p className="text-muted-foreground">No shipment notifications</p>
+                  <p className="text-muted-foreground">
+                    No shipment notifications
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -168,11 +215,19 @@ export default function NotificationsPage() {
 
           <TabsContent value="account" className="space-y-4">
             {accountNotifs.length > 0 ? (
-              accountNotifs.map((notif) => <NotificationItem key={notif.id} notification={notif} type="account" />)
+              accountNotifs.map((notif) => (
+                <NotificationItem
+                  key={notif.id}
+                  notification={notif}
+                  type="account"
+                />
+              ))
             ) : (
               <Card>
                 <CardContent className="pt-8 text-center">
-                  <p className="text-muted-foreground">No account notifications</p>
+                  <p className="text-muted-foreground">
+                    No account notifications
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -181,7 +236,11 @@ export default function NotificationsPage() {
           <TabsContent value="announcement" className="space-y-4">
             {announcementNotifs.length > 0 ? (
               announcementNotifs.map((notif) => (
-                <NotificationItem key={notif.id} notification={notif} type="announcement" />
+                <NotificationItem
+                  key={notif.id}
+                  notification={notif}
+                  type="announcement"
+                />
               ))
             ) : (
               <Card>
@@ -194,7 +253,5 @@ export default function NotificationsPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }
-
-import { cn } from "@/lib/utils"

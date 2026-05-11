@@ -10,99 +10,12 @@ import { Search, Calendar, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useGetBlogsQuery } from "@/store/slice/apiSlice";
 
-const mockblogPosts = [
-  {
-    id: 1,
-    slug: "tips-optimal-packaging",
-    title: "Tips for Optimal Packaging: Ensure Safe Delivery",
-    excerpt:
-      "Learn the best practices for packaging your items to prevent damage during transit from China to Nigeria.",
-    content:
-      "Proper packaging is crucial for safe delivery. Use quality materials, add protective layers, and ensure correct weight distribution.",
-    author: "John Smith",
-    date: "2025-11-07",
-    category: "Packaging",
-    image: "/shipping-packaging.jpg",
-    readTime: "5 min read",
-  },
-  {
-    id: 2,
-    slug: "air-vs-sea-shipping",
-    title: "Air vs Sea Shipping: Which One is Right for You?",
-    excerpt:
-      "Compare air and sea shipping options to make the best choice for your business needs and budget.",
-    content:
-      "Air shipping is faster but more expensive. Sea shipping is economical for large volumes. Consider your timeline and volume requirements.",
-    author: "Sarah Johnson",
-    date: "2025-11-05",
-    category: "Shipping Guide",
-    image: "/airport-cargo-logistics.jpg",
-    readTime: "7 min read",
-  },
-  {
-    id: 3,
-    slug: "customs-documentation-guide",
-    title: "Complete Guide to Customs Documentation",
-    excerpt:
-      "Everything you need to know about customs forms, HS codes, and required documentation for China-Nigeria shipments.",
-    content:
-      "We handle all customs documentation for you. Ensure accurate HS codes and proper declarations to avoid delays.",
-    author: "Michael Chen",
-    date: "2025-11-03",
-    category: "Customs",
-    image: "/customs-border-checkpoint.jpg",
-    readTime: "8 min read",
-  },
-  {
-    id: 4,
-    slug: "track-your-shipment-real-time",
-    title: "How to Track Your Shipment in Real-Time",
-    excerpt:
-      "Step-by-step guide on using our tracking system to monitor your package from China warehouse to Nigeria delivery.",
-    content:
-      "Use your tracking number on our website or mobile app to get live updates. You'll see every checkpoint in the journey.",
-    author: "Emily Davis",
-    date: "2025-11-01",
-    category: "Tutorial",
-    image: "/gps-tracking-location.jpg",
-    readTime: "4 min read",
-  },
-  {
-    id: 5,
-    slug: "insurance-coverage-explained",
-    title: "Understanding Insurance Coverage for Your Shipments",
-    excerpt:
-      "Comprehensive explanation of what's covered under our standard insurance and how to file claims if needed.",
-    content:
-      "All shipments include basic insurance. Additional coverage available for high-value items. File claims within 30 days of delivery.",
-    author: "David Wilson",
-    date: "2025-10-30",
-    category: "Insurance",
-    image: "/insurance-protection-coverage.jpg",
-    readTime: "6 min read",
-  },
-  {
-    id: 6,
-    slug: "exchange-rates-impact",
-    title: "Understanding Exchange Rates and Pricing",
-    excerpt:
-      "Learn how USD-NGN and CNY-NGN exchange rates affect your shipping costs and how to optimize your expenses.",
-    content:
-      "Exchange rates fluctuate daily. Lock in rates when favorable. Our pricing is transparent and competitive.",
-    author: "Lisa Anderson",
-    date: "2025-10-28",
-    category: "Pricing",
-    image: "/currency-exchange-rates.jpg",
-    readTime: "5 min read",
-  },
-];
-
 export default function BlogPage() {
   const { data: blogPosts, isLoading } = useGetBlogsQuery({});
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const filteredPosts = mockblogPosts?.filter((post: any) => {
+  const filteredPosts = blogPosts?.data?.filter((post: any) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
@@ -112,7 +25,7 @@ export default function BlogPage() {
   });
 
   const categories = Array.from(
-    new Set(mockblogPosts?.map((p) => p?.category)),
+    new Set(blogPosts?.data?.map((p: any) => p?.category)),
   );
 
   return (
@@ -131,6 +44,7 @@ export default function BlogPage() {
             </p>
           </div>
 
+          {isLoading && <p>...loading blog</p>}
           {/* Search and Filter */}
           <Card className="mb-8">
             <CardContent className="pt-6">
@@ -159,7 +73,7 @@ export default function BlogPage() {
                   >
                     All Articles
                   </button>
-                  {categories?.map((category) => (
+                  {categories?.map((category: any) => (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
@@ -180,12 +94,12 @@ export default function BlogPage() {
           {/* Blog Posts Grid */}
           <div className="space-y-6">
             {filteredPosts?.length > 0 ? (
-              filteredPosts?.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`}>
+              filteredPosts?.map((post: any) => (
+                <Link key={post.id} href={`/blog/${post.id}`}>
                   <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                     <div className="grid md:grid-cols-4 h-full">
                       {/* Image */}
-                      <div className="relative md:h-auto h-48 bg-muted overflow-hidden rounded-t-lg md:rounded-l-lg md:rounded-t-none">
+                      <div className="relative  h-48 bg-muted overflow-hidden rounded-t-lg md:rounded-l-lg md:rounded-t-none">
                         <img
                           src={post.image || "/placeholder.svg"}
                           alt={post.title}

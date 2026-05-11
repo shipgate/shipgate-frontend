@@ -26,6 +26,7 @@ const customerMenuItems = [
   { icon: Calculator, label: "Calculator", href: "/dashboard/calculator" },
   { icon: FileText, label: "Invoices", href: "/dashboard/invoices" },
   { icon: MessageSquare, label: "Support", href: "/dashboard/support" },
+  { icon: Bell, label: "Notifications", href: "/dashboard/notifications" },
 ];
 
 const superAdminMenuItems = [
@@ -54,7 +55,8 @@ const adminMenuItems = [
   { icon: Users, label: "Customers", href: "/admin/customers" },
   { icon: MapPin, label: "Status Updates", href: "/admin/status-updates" },
   { icon: Truck, label: "Assign to Couriers", href: "/admin/assign-couriers" },
-  { icon: FileText, label: "Reports", href: "/admin/reports" },
+  { icon: FileText, label: "Blog", href: "/admin/blog" },
+  // { icon: FileText, label: "Reports", href: "/admin/reports" },
   {
     icon: MessageSquare,
     label: "Support Tickets",

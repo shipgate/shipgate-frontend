@@ -482,6 +482,20 @@ export const apiSlice = createApi({
         }
       },
     }),
+    // useGetBlogByIdQuery
+    GetBlogById: builder.query({
+      query: ({ id }) => ({
+        url: `/blog/get-post-by-id?id=${id}`,
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
     // useGetAllInvoicesQuery
     getAllInvoices: builder.query({
       query: () => ({
@@ -823,6 +837,20 @@ export const apiSlice = createApi({
         }
       },
     }),
+    // useGetUserNotificationQuery
+    getUserNotification: builder.query({
+      query: () => ({
+        url: "/notifications",
+      }),
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected errror");
+        }
+      },
+    }),
 
     // useGetManageCustomersQuery
     getManageCustomers: builder.query({
@@ -937,6 +965,48 @@ export const apiSlice = createApi({
       },
     }),
 
+    // useCreateBlogMutation
+    createBlog: builder.mutation<
+      unknown,
+      {
+        Title: string;
+        Excerpt: string;
+        Content: string;
+        Author: string;
+        Date: string;
+        Category: string;
+        ReadTime: string;
+        Image: File;
+      }
+    >({
+      query: (formData) => {
+        const form = new FormData();
+        form.append("Title", formData.Title);
+        form.append("Excerpt", formData.Excerpt);
+        form.append("Content", formData.Content);
+        form.append("Author", formData.Author);
+        form.append("Date", formData.Date);
+        form.append("Category", formData.Category);
+        form.append("ReadTime", formData.ReadTime);
+        form.append("Image", formData.Image);
+
+        return {
+          url: "/blog/create-post",
+          method: "POST",
+          body: form,
+        };
+      },
+      async onQueryStarted(args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          successToast("Blog post created successfully");
+        } catch (error) {
+          const errorM = error as CustomError;
+          errorToast(errorM.error?.data?.error || "Unexpected error");
+        }
+      },
+    }),
+
     //useUpdateCourierShipmentStatusMutation
     updateCourierShipmentStatus: builder.mutation<
       unknown,
@@ -957,7 +1027,7 @@ export const apiSlice = createApi({
           successToast("Shipments status updated successfully");
         } catch (error) {
           const errorM = error as CustomError;
-          errorToast(errorM.error?.data?.error || "Unexpected errror");
+          errorToast(errorM.error?.data?.error || "Unexpected error");
         }
       },
     }),
@@ -982,6 +1052,7 @@ export const {
 
   // blogs
   useGetBlogsQuery,
+  useGetBlogByIdQuery,
 
   // invoice
   useGetAllInvoicesQuery,
@@ -1038,4 +1109,8 @@ export const {
   useGetWarehouseShipmentQuery,
   useAssignMultipleCourierMutation,
   useUpdateShipmentCourierStatusMutation,
+  useGetUserNotificationQuery,
+
+  // blog
+  useCreateBlogMutation,
 } = apiSlice;

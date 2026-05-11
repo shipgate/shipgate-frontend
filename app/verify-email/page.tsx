@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
         <CardHeader>
           <CardTitle className="text-2xl">Email Verification</CardTitle>
 
-          {!isLoading && !success && !error && (
+          {/* {!isLoading && !success && !error && (
             <>
               <p>
                 We have sent a verification email to your inbox. Click the link
@@ -55,7 +55,7 @@ export default function VerifyEmailPage() {
                 <Button>Open GMAIL</Button>
               </a>
             </>
-          )}
+          )} */}
         </CardHeader>
 
         <CardContent className="space-y-4 text-center">

@@ -117,8 +117,8 @@ export default function ManageAdmins() {
                   }
                   className="w-full mt-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 >
-                  <option>Admin</option>
-                  <option>Operations Staff</option>
+                  <option value={"Admin"}>Admin</option>
+                  <option value={"OperationsStaff"}>Operations Staff</option>
                 </select>
               </div>
               <div className="flex gap-2 justify-end">

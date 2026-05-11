@@ -67,6 +67,7 @@ export default function AddShipmentPage() {
     height: "",
     senderState: "",
     senderCity: "",
+    recipientPostalAddress: "",
     senderCountry: "China",
     senderEmail: "",
     recipientState: "",
@@ -133,6 +134,7 @@ export default function AddShipmentPage() {
             : "",
       },
     })
+      .unwrap()
       .then(() => {
         alert("Shipment created successfully!");
 
@@ -158,6 +160,7 @@ export default function AddShipmentPage() {
           senderCity: "",
           senderEmail: "",
           delivery: "",
+          recipientPostalAddress: "",
         });
       })
       .catch((err) => {
@@ -375,6 +378,22 @@ export default function AddShipmentPage() {
                   required
                 />
               </div>
+
+              {formData.delivery === "home" && (
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-foreground mb-2 ">
+                    Postal Address
+                  </label>
+                  <Input
+                    type="text"
+                    name="recipientPostalAddress"
+                    value={formData.recipientPostalAddress}
+                    onChange={handleChange}
+                    placeholder="Enter full address"
+                    required
+                  />
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Recipient City
